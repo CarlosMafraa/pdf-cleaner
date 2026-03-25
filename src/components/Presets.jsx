@@ -43,14 +43,14 @@ export function PresetSelector({
         <Button variant="secondary" className="w-full justify-between bg-background border-none hover:bg-muted text-primary font-bold h-11 px-4 rounded-xl">
           <span className="flex items-center gap-3">
             <Bookmark size={18} />
-            <span className="uppercase text-[10px] tracking-widest">Presets</span>
+            <span className="uppercase text-[10px] tracking-widest">Favoritos</span>
           </span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0 surface-lowest border-none" align="end">
         {/* Presets padrão */}
         <div className="p-4">
-          <p className="label-md mb-4 text-primary opacity-50 px-2 tracking-[0.2em]">Default standards</p>
+          <p className="label-md mb-4 text-primary opacity-50 px-2 tracking-[0.2em] uppercase">Padrões do Sistema</p>
           <div className="space-y-1">
             {defaultPresets.map(preset => (
               <button
@@ -75,7 +75,7 @@ export function PresetSelector({
         {/* Presets customizados */}
         {customPresets.length > 0 && (
           <div className="p-4 pt-0">
-            <p className="label-md mb-4 text-primary opacity-50 px-2 tracking-[0.2em]">Personal archive</p>
+            <p className="label-md mb-4 text-primary opacity-50 px-2 tracking-[0.2em] uppercase">Arquivo pessoal</p>
             <div className="space-y-1">
               {customPresets.map(preset => (
                 <div
@@ -112,7 +112,7 @@ export function PresetSelector({
               <Input
                 value={newPresetName}
                 onChange={(e) => setNewPresetName(e.target.value)}
-                placeholder="Name current state..."
+                placeholder="Nomear estado atual..."
                 className="h-9 text-xs flex-1 border-none bg-transparent focus-visible:ring-0"
                 autoFocus
                 onKeyDown={(e) => e.key === 'Enter' && handleSavePreset()}
@@ -142,7 +142,7 @@ export function PresetSelector({
               className="w-full justify-center gap-3 text-primary h-11 rounded-xl hover:bg-muted font-bold"
             >
               <Plus size={18} />
-              <span className="uppercase text-[10px] tracking-widest">Archive Configuration</span>
+              <span className="uppercase text-[10px] tracking-widest">Salvar Configuração</span>
             </Button>
           )}
         </div>

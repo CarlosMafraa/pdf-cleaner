@@ -4,46 +4,47 @@
 
 @layer base {
   :root {
-    --background: 180 10% 98%; /* #f9f9f9 - surface */
-    --foreground: 180 8% 19%;   /* #2d3435 - on_surface */
+    /* The Signature Palette */
+    --background: 0 0% 98%;           /* #f9f9f9 - surface */
+    --foreground: 184 8% 19%;         /* #2d3435 - on_surface */
     
-    --card: 0 0% 100%;             /* #ffffff - surface-container-lowest */
-    --card-foreground: 180 8% 19%;
+    --card: 0 0% 100%;                /* #ffffff - surface-container-lowest */
+    --card-foreground: 184 8% 19%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 180 8% 19%;
+    --popover-foreground: 184 8% 19%;
     
-    --primary: 224 15% 40%;        /* #565e74 - primary */
-    --primary-foreground: 224 20% 98%; /* #f7f7ff - on_primary */
+    --primary: 224 15% 40%;           /* #565e74 - primary */
+    --primary-foreground: 224 20% 98%;    /* #f7f7ff - on_primary */
     
-    --secondary: 184 9% 88%;       /* #dde4e5 - surface-container-highest */
-    --secondary-foreground: 180 8% 19%;
+    --secondary: 184 8% 89%;          /* #dde4e5 - surface-container-highest */
+    --secondary-foreground: 184 8% 19%;
     
-    --muted: 180 5% 95%;           /* #f2f4f4 - surface-container-low */
-    --muted-foreground: 184 4% 37%; /* #5a6061 - on_surface_variant */
+    --muted: 180 5% 95%;              /* #f2f4f4 - surface-container-low */
+    --muted-foreground: 184 4% 37%;    /* #5a6061 - on_surface_variant */
     
-    --accent: 184 9% 88%;
-    --accent-foreground: 180 8% 19%;
+    --accent: 180 5% 95%;
+    --accent-foreground: 184 8% 19%;
     
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
     
-    --border: 184 6% 69%;          /* #adb3b4 - outline-variant */
+    --border: 184 6% 69%;             /* #adb3b4 - outline-variant (use with opacity) */
     --input: 184 6% 69%;
     --ring: 224 15% 40%;
     
-    --radius: 1rem; /* lg: 16px */
+    --radius: 1rem;                   /* lg: 16px */
   }
 
   .dark {
-    --background: 180 8% 10%;
+    --background: 184 8% 8%;
     --foreground: 180 5% 95%;
-    --card: 180 8% 12%;
+    --card: 184 8% 10%;
     --card-foreground: 180 5% 95%;
     --primary: 224 15% 60%;
-    --primary-foreground: 180 8% 10%;
-    --muted: 180 5% 15%;
-    --muted-foreground: 180 5% 70%;
+    --primary-foreground: 184 8% 8%;
+    --muted: 184 5% 12%;
+    --muted-foreground: 184 5% 70%;
   }
 }
 

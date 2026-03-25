@@ -1,37 +1,40 @@
-# The Silent Architect • PDF Archive Manager
+# PDF Cleaner Pro
 
-A high-end, privacy-focused studio for removing digital noise, signatures, and architectural debris from your PDF documents.
+## 📋 Resumo
+O **PDF Cleaner Pro** é uma ferramenta web para limpeza de documentos PDF. Permite remover assinaturas digitais, marcas d'água e bordas indesejadas usando réguas interativas — basta arrastar as bordas diretamente sobre o documento para definir a área de corte.
 
-## Philosophy
+## 🎯 O que faz
 
-Designed as a series of physical layers, **The Silent Architect** provides a professional, disciplined interface where content is the single priority. Everything else is secondary.
+| Funcionalidade | Descrição |
+| :--- | :--- |
+| **Remover assinaturas digitais** | Elimina anotações de assinatura digital embutidas no PDF |
+| **Cortar bordas customizáveis** | Réguas arrastáveis para definir corte em topo, base, esquerda e direita |
+| **Preview antes/depois** | Comparação lado a lado do original vs processado |
+| **Presets prontos** | Configurações pré-definidas para casos comuns |
+| **Salvar presets** | Guarde suas configurações favoritas |
+| **Processamento local** | 100% no navegador, nenhum arquivo é enviado a servidores |
 
-## Features
+## 🔒 Diferenciais
 
-- **Precision Rulers**: Utilize tactile mechanical guides to define crop areas with sub-pixel accuracy.
-- **Zero Cloud Footprint**: All processing is architectural, local, and private. Your documents never leave your physical device.
-- **Editorial UI**: A premium, minimalist interface built with modern typography and tonal hierarchy.
-- **Archive Grade**: Export clean files ready for high-resolution printing or formal archival.
+- **Privacidade total** — processamento 100% local no navegador
+- **Sem backend** — não precisa de servidor, hospedagem simples e gratuita
+- **Interface intuitiva** — réguas visuais estilo Photoshop/Figma
+- **Zero custo** — sem limites de uso, sem assinatura
 
-## Technical Stack
+---
 
-- **React + Vite**
-- **Tailwind CSS**
-- **pdf-lib** (Document processing)
-- **pdf.js** (Rendering engine)
-
-## Local Setup
+## 🛠️ Configuração Local
 
 ```bash
-# Install dependencies
+# Instalar dependências
 pnpm install
 
-# Run development server
+# Rodar servidor de desenvolvimento
 pnpm dev
 
-# Build for production
+# Gerar build de produção
 pnpm build
 ```
 
 ---
-Built with focus. &copy; 2026.
+PDF Cleaner Pro &copy; 2026. Processamento Local e Gratuito.

@@ -53,7 +53,7 @@ export function FileUploader({ onFilesSelected, multiple = true }) {
         onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
         onDragLeave={(e) => { e.preventDefault(); setIsDragOver(false) }}
         className={cn(
-          "relative border-2 border-dashed rounded-[2rem] p-12 sm:p-20 text-center cursor-pointer transition-all duration-300",
+          "relative border-2 border-dashed rounded-[2rem] p-8 sm:p-12 text-center cursor-pointer transition-all duration-300",
           isDragOver 
             ? "border-primary bg-primary/5 scale-[1.01]" 
             : "border-foreground/5 hover:bg-muted/50"
@@ -70,31 +70,31 @@ export function FileUploader({ onFilesSelected, multiple = true }) {
 
         <div className="flex flex-col items-center">
           <div className={cn(
-            "w-20 h-20 rounded-3xl flex items-center justify-center mb-8 transition-all duration-300",
+            "w-16 h-16 rounded-3xl flex items-center justify-center mb-6 transition-all duration-300",
             isDragOver ? "bg-primary text-primary-foreground scale-110" : "bg-muted text-muted-foreground"
           )}>
             <Upload 
-              size={32} 
+              size={28} 
               className="transition-colors"
             />
           </div>
           
-          <h3 className="text-2xl font-bold mb-2 tracking-tight">
-            {isDragOver ? 'Release to architect' : 'Begin documentation'}
+          <h3 className="text-xl font-bold mb-1 tracking-tight">
+            {isDragOver ? 'Solte para processar' : 'Carregar Documentos'}
           </h3>
           
-          <p className="text-sm text-muted-foreground mb-8">
-            Drag and drop or select PDFs from your archive
+          <p className="text-xs text-muted-foreground mb-6">
+            Arraste e solte ou selecione PDFs
           </p>
           
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
                <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-               <p className="label-md">PDF Standard</p>
+               <p className="label-md uppercase">Padrão PDF</p>
             </div>
             <div className="flex items-center gap-2">
                <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-               <p className="label-md">Max 50MB</p>
+               <p className="label-md uppercase">Máx 50MB</p>
             </div>
           </div>
         </div>
@@ -115,8 +115,8 @@ export function FileList({ files, onRemove }) {
 
   return (
     <div className="space-y-6">
-      <p className="label-md tracking-[0.2em] text-primary">
-        Queued Documents ({files.length})
+      <p className="label-md tracking-[0.2em] text-primary uppercase">
+        Fila de Documentos ({files.length})
       </p>
       
       <div className="space-y-3 max-h-64 overflow-y-auto scrollbar-thin pr-2">

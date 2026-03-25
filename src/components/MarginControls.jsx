@@ -45,7 +45,7 @@ export function MarginControls({ margins, onChange, pdfDimensions }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <p className="label-md tracking-[0.2em] text-primary">Mechanical Tuning</p>
+        <p className="label-md tracking-[0.2em] text-primary uppercase">Ajuste Fino</p>
         <Button
           variant="ghost"
           size="sm"
@@ -53,15 +53,15 @@ export function MarginControls({ margins, onChange, pdfDimensions }) {
           className="h-8 text-[10px] gap-2 uppercase tracking-widest font-bold text-muted-foreground hover:text-primary transition-colors"
         >
           <RotateCcw size={12} />
-          Reset
+          Resetar
         </Button>
       </div>
       
       <div className="grid grid-cols-1 gap-4">
-        <MarginInput side="top" icon={ArrowUp} label="Ceiling" />
-        <MarginInput side="bottom" icon={ArrowDown} label="Floor" />
-        <MarginInput side="left" icon={ArrowLeft} label="Left" />
-        <MarginInput side="right" icon={ArrowRight} label="Right" />
+        <MarginInput side="top" icon={ArrowUp} label="Topo" />
+        <MarginInput side="bottom" icon={ArrowDown} label="Base" />
+        <MarginInput side="left" icon={ArrowLeft} label="Esq." />
+        <MarginInput side="right" icon={ArrowRight} label="Dir." />
       </div>
 
       {/* Visual Tuning Reference */}
@@ -93,7 +93,7 @@ export function MarginControls({ margins, onChange, pdfDimensions }) {
           )}
           
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="label-md opacity-20 tracking-[0.3em]">ARCHIVE</span>
+            <span className="label-md opacity-20 tracking-[0.3em] uppercase">Arquivo</span>
           </div>
         </div>
       </div>

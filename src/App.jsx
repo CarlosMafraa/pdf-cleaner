@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react'
 import { PDFDocument, rgb } from 'pdf-lib'
 import * as pdfjsLib from 'pdfjs-dist'
-import { FileText, Shield, Zap, Ruler, Github, Heart } from 'lucide-react'
+import { FileText, Shield, Zap, Ruler, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -200,104 +200,108 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Editorial Header */}
-      <header className="bg-muted px-6 sm:px-12 py-8">
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Header - Compact */}
+      <header className="bg-muted px-6 sm:px-12 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-primary flex items-center justify-center rounded-xl">
-              <FileText size={20} className="text-primary-foreground" />
+            <div className="w-8 h-8 bg-primary flex items-center justify-center rounded-lg">
+              <FileText size={16} className="text-primary-foreground" />
             </div>
-            <p className="label-md font-bold tracking-[0.2em] text-foreground">
-              THE SILENT ARCHITECT
+            <p className="label-md font-bold tracking-[0.2em] text-foreground uppercase pt-0.5">
+              PDF CLEANER PRO
             </p>
           </div>
-          
-          <p className="hidden md:block text-[10px] font-bold text-muted-foreground uppercase tracking-[0.3em]">
-            Precision Document Archive
-          </p>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 sm:px-12">
-        {/* Section 1: Hero */}
-        <section className="pt-24 pb-20 sm:pt-40 sm:pb-32">
-          <div className="max-w-4xl">
-            <h1 className="text-5xl sm:text-8xl font-bold tracking-tighter leading-[0.95] text-foreground mb-8">
-              Refined <br /> Cleaning Studio.
-            </h1>
-            <p className="text-lg sm:text-2xl text-muted-foreground font-medium max-w-2xl leading-relaxed">
-              Define your architectural perimeter. Remove digital debris with surgical precision using our mechanical drafting interface.
-            </p>
-          </div>
-        </section>
+      <main className="flex-1 max-w-7xl mx-auto px-6 sm:px-12 w-full">
+        {/* Simplified Hero Section */}
+        <section className="pt-12 pb-16">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+            {/* Left Column: Context */}
+            <div className="space-y-6">
+              <h1 className="text-5xl sm:text-6xl font-bold tracking-tighter leading-none text-foreground">
+                PDF Cleaner Pro
+              </h1>
+              <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
+                Uma ferramenta web para limpeza de documentos PDF. Remova assinaturas digitais, marcas d'água e bordas indesejadas usando réguas interativas diretamente sobre o documento.
+              </p>
+            </div>
 
-        {/* Section 2: Core Workspace - Upload Focused */}
-        <section className="mb-40">
-          <div className="max-w-3xl mx-auto bg-muted p-6 sm:p-12 rounded-[2rem]">
-            <div className="bg-background rounded-2xl border-none p-8 sm:p-20 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
-              <FileUploader 
-                onFilesSelected={handleFilesSelected}
-                multiple={true}
-              />
-              
-              {files.length > 0 && (
-                <div className="mt-12 pt-12 border-t border-muted">
-                  <FileList files={files} onRemove={handleRemoveFile} />
-                </div>
-              )}
+            {/* Right Column: Interactive Dropzone */}
+            <div className="relative">
+              <div className="absolute -inset-4 bg-muted rounded-[2.5rem] -z-10" />
+              <div className="bg-background rounded-3xl p-6 sm:p-10 shadow-[0_12px_40px_rgba(45,52,53,0.06)] ring-1 ring-foreground/[0.03]">
+                <FileUploader 
+                  onFilesSelected={handleFilesSelected}
+                  multiple={true}
+                />
+                
+                {files.length > 0 && (
+                  <div className="mt-8 pt-8 border-t border-muted">
+                    <FileList files={files} onRemove={handleRemoveFile} />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Section 3: Professional Ledger (Cards) */}
-        <section className="grid md:grid-cols-3 gap-12 pb-40 border-t border-muted pt-24">
-          <div className="space-y-6">
-             <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center">
-                <Ruler size={24} className="text-primary" />
-             </div>
-             <p className="label-md text-primary tracking-[0.2em]">01 / DRAFTING</p>
-             <h3 className="text-2xl font-bold tracking-tight">Precision Rulers</h3>
-             <p className="text-muted-foreground leading-relaxed text-sm">
-                Utilize tactile mechanical guides to define crop areas with sub-pixel accuracy across your entire document.
-             </p>
-          </div>
+        {/* Section 3: Dual Cards - Prominent Symmetric Titles */}
+        <div className="grid md:grid-cols-2 gap-8 pb-40 py-24">
+           {/* O que faz - Card */}
+           <section className="bg-muted px-10 py-12 rounded-2xl space-y-12">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">Funcionalidades</h2>
+              <div className="space-y-8">
+                 {[
+                   { icon: FileText, title: "Assinaturas", desc: "Elimina anotações de assinatura digital" },
+                   { icon: Ruler, title: "Bordas", desc: "Réguas para definir corte em topo e laterais" },
+                   { icon: Shield, title: "Local", desc: "100% no navegador, sem upload para servidores" }
+                 ].map((feat, i) => (
+                   <div key={i} className="flex gap-6 items-start group">
+                      <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center shrink-0 shadow-sm transition-all group-hover:scale-105">
+                         <feat.icon size={18} className="text-primary" />
+                      </div>
+                      <div className="pt-0.5">
+                         <h3 className="font-bold text-sm text-foreground mb-1">{feat.title}</h3>
+                         <p className="text-xs text-muted-foreground leading-relaxed">{feat.desc}</p>
+                      </div>
+                   </div>
+                 ))}
+              </div>
+           </section>
 
-          <div className="space-y-6">
-             <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center">
-                <Zap size={24} className="text-primary" />
-             </div>
-             <p className="label-md text-primary tracking-[0.2em]">02 / PROCESSING</p>
-             <h3 className="text-2xl font-bold tracking-tight">Clean Result</h3>
-             <p className="text-muted-foreground leading-relaxed text-sm">
-                Remove signatures, annotations, and margin noise instantly. Export high-resolution files ready for formal archives.
-             </p>
-          </div>
-
-          <div className="space-y-6">
-             <div className="w-12 h-12 bg-muted rounded-xl flex items-center justify-center">
-                <Heart size={24} className="text-primary" />
-             </div>
-             <p className="label-md text-primary tracking-[0.2em]">03 / PHILOSOPHY</p>
-             <h3 className="text-2xl font-bold tracking-tight">Pure Content</h3>
-             <p className="text-muted-foreground leading-relaxed text-sm">
-                We believe in the purity of the document. Our tool is designed to vanish, leaving only your clean information behind.
-             </p>
-          </div>
-        </section>
+           {/* Diferenciais - Card */}
+           <section className="bg-muted px-10 py-12 rounded-2xl space-y-12">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">Diferenciais</h2>
+              <div className="space-y-8">
+                 {[
+                   { icon: Check, title: "Privacidade", desc: "Processamento 100% local no navegador" },
+                   { icon: Check, title: "Custo Zero", desc: "Sem limites de uso ou assinaturas mensais" },
+                   { icon: Check, title: "Nativo", desc: "Interface intuitiva inspirada em ferramentas de design" },
+                   { icon: Check, title: "Prático", desc: "Hospedagem simples, rápida e gratuita" }
+                 ].map((diff, i) => (
+                   <div key={i} className="flex gap-6 items-start group">
+                      <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center shrink-0 shadow-sm transition-all group-hover:scale-105">
+                         <diff.icon size={18} className="text-primary" />
+                      </div>
+                      <div className="pt-0.5">
+                         <h3 className="font-bold text-sm text-foreground mb-1">{diff.title}</h3>
+                         <p className="text-xs text-muted-foreground leading-relaxed">{diff.desc}</p>
+                      </div>
+                   </div>
+                 ))}
+              </div>
+           </section>
+        </div>
       </main>
 
-      {/* Footer */}
-      <footer className="bg-muted px-6 sm:px-12 py-16">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 border-t border-foreground/5 pt-12">
-          <div className="flex items-center gap-3">
-             <div className="w-2 h-2 rounded-full bg-primary/40 animate-pulse" />
-             <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                Document Cleaning System v2.0
-             </p>
-          </div>
-          <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
-            The Silent Architect &copy; 2026. Built with focus.
+      {/* Footer - Minimal */}
+      <footer className="bg-muted px-6 sm:px-12 py-8 mt-auto">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 border-t border-foreground/5 pt-8">
+          <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+            PDF Cleaner Pro &copy; 2026. Processamento Local e Gratuito.
           </p>
         </div>
       </footer>

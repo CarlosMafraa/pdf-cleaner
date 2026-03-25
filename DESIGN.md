@@ -1,98 +1,88 @@
-# The Design System: High-End Editorial Specification
+# Design System Strategy: The Silent Architect
 
-## 1. Overview & Creative North Star: "The Silent Architect"
-This design system is built on the philosophy of **The Silent Architect**. It rejects the noisy, over-stimulated patterns of "Standard SaaS" in favor of a high-end editorial experience. It is professional, disciplined, and sophisticated.
+## 1. Overview & Creative North Star
+The creative North Star for this design system is **"The Silent Architect."** 
 
-The goal is to move beyond the grid. We achieve a "custom" feel through **intentional asymmetry**, generous white space, and a hierarchy driven by tonal shifts rather than structural lines. The interface should feel like a premium printed monograph: authoritative, calm, and meticulously composed.
+In the world of professional PDF utility, the interface should never compete with the document. This system moves beyond "minimalism" into "editorial precision." We are not building a tool; we are building a high-end digital desk. The aesthetic is defined by intentional asymmetry, high-contrast typographic scales, and an obsession with white space that mimics the margins of a premium architectural journal. 
 
-**Key Principles:**
-*   **Low Visual Noise:** If an element doesn't serve a functional purpose, it is removed.
-*   **Tonal Layering:** Depth is created through surface shifts, not borders.
-*   **Editorial Scale:** Bold typographic contrast between massive display headers and precise, legible body text.
+By utilizing "The Silent Architect" approach, we break the generic "SaaS template" look. We reject 1px borders and rigid grids in favor of tonal depth and layered surfaces that guide the eye without shouting for attention.
 
 ---
 
-## 2. Colors & Surface Logic
-The palette is a study in neutrals. We use a range of cool grays and off-whites to create a sophisticated, monochromatic environment.
+## 2. Colors: Tonal Architecture
+The palette is rooted in a "Deep Emerald" primary and "Slate Gray" secondary, but the sophistication lies in the neutral transitions.
 
 ### The "No-Line" Rule
-**1px solid borders are strictly prohibited for sectioning.** To separate the sidebar from the main content, or a header from a body, use a background color shift (e.g., `surface-container-low` against a `background` page). 
+**Explicit Instruction:** Designers are prohibited from using 1px solid borders to define sections or containers. 
+Boundaries must be defined solely through background color shifts. For example, a `surface-container-low` (#f3f4f5) sidebar sitting against a `surface` (#f8f9fa) canvas creates a clean, sophisticated break that feels structural rather than "drawn."
 
 ### Surface Hierarchy & Nesting
-Treat the UI as a series of physical layers. Hierarchy is defined by "nesting" tokens:
-*   **Page Background:** `surface` (#f9f9f9)
-*   **Main Content Area:** `surface-container-low` (#f2f4f4)
-*   **Interactive Cards:** `surface-container-lowest` (#ffffff)
-*   **Elevated Overlays:** `surface-container-high` (#e4e9ea) with backdrop blur.
+Treat the UI as a series of stacked, fine-paper sheets. 
+- **Base Level:** `surface` (#f8f9fa)
+- **Secondary Utility:** `surface-container-low` (#f3f4f5)
+- **Active Workspace/Cards:** `surface-container-lowest` (#ffffff) to provide a soft "pop" of clarity.
 
-### Signature Palette
-*   **Primary Text:** `on_surface` (#2d3435) - Use for high-readability.
-*   **Secondary Text:** `on_surface_variant` (#5a6061) - Use for metadata and hints.
-*   **The Highlight:** `primary` (#565e74) - A muted blue-gray used sparingly for focus states and primary actions.
+### The "Glass & Gradient" Rule
+To avoid a flat, "budget" feel, use **Glassmorphism** for floating elements (like document toolbars or hover menus). Apply `surface-container-lowest` at 80% opacity with a `24px` backdrop blur. 
+**Signature Texture:** Main CTAs or active progress bars should use a subtle linear gradient from `primary` (#006948) to `primary-container` (#00855d) at a 135-degree angle. This adds a "soul" to the green that flat hex codes lack.
 
 ---
 
-## 3. Typography: The Inter Monograph
-We utilize **Inter** exclusively, but we treat it with editorial intent. The "High-End" feel comes from the extreme variance between `display` and `label` sizes.
+## 3. Typography: Editorial Authority
+We use **Inter** not as a system font, but as a brand statement. The hierarchy relies on extreme contrast between `display` sizes and `label` sizes.
 
-*   **Display (lg/md):** Letter-spacing set to `-0.02em`. Used for "Hero" moments or dashboard summaries. It should feel architectural.
-*   **Headline (sm):** The workhorse for section titles. Always `500` weight.
-*   **Body (md):** Main reading content. Standard `400` weight with a generous line-height (1.6) to ensure an editorial, "airy" feel.
-*   **Label (sm/md):** All-caps with `0.05em` letter-spacing. Use this for category headers or small UI hints to create a "technical" contrast against the soft body text.
+- **Display & Headlines:** Use `display-sm` (2.25rem) for main dashboard greetings or empty states. The tracking should be tightened (-0.02em) to feel "locked in."
+- **Titles:** `title-md` (1.125rem) is our workhorse for document names. Use `on_surface` (#191c1d) for maximum legibility.
+- **Body & Labels:** `body-md` (0.875rem) uses `on_surface_variant` (#3d4a42) for secondary information. This slight green-grey tint ensures the text feels integrated into the brand rather than a generic grey.
+- **Micro-Copy:** `label-sm` (0.6875rem) should be used in All-Caps with +0.05em letter spacing for metadata (e.g., "FILE SIZE", "LAST EDITED") to evoke a technical, professional blueprint feel.
 
 ---
 
-## 4. Elevation & Depth
-In this system, depth is "felt," not "seen." We avoid heavy drop shadows in favor of light and translucency.
+## 4. Elevation & Depth: Tonal Layering
+Traditional drop shadows are too "loud" for a silent interface. We achieve depth through atmospheric light.
 
 ### The Layering Principle
-Instead of a shadow, place a `surface-container-lowest` card on a `surface-container-low` background. The 2% difference in hex value is enough for the human eye to perceive a "lift" without the "mud" of a shadow.
+Instead of a shadow, place a `surface-container-lowest` (#ffffff) card on a `surface-container-low` (#f3f4f5) background. The `0.5rem` (8px) difference in the spacing scale between the card edge and the container edge creates a "soft lift" that is felt rather than seen.
 
 ### Ambient Shadows
-For floating elements (Modals, Popovers), use a "Whisper Shadow":
-*   **Shadow:** `0px 12px 32px rgba(45, 52, 53, 0.04)`
-*   The shadow color is derived from `on_surface`, creating a natural ambient occlusion rather than a generic gray smudge.
+When an element must float (e.g., a Modal or a context menu), use an **Ambient Shadow**:
+- **X/Y:** 0, 12px
+- **Blur:** 32px
+- **Color:** `on_surface` (#191c1d) at 4% opacity. 
+This mimics natural light falling on thick paper.
 
-### The Ghost Border
-If an edge is functionally required for accessibility, use a **Ghost Border**:
-*   `outline-variant` (#adb3b4) at **15% opacity**.
-*   It should be barely perceptible, serving only to guide the eye in high-density areas.
+### The "Ghost Border" Fallback
+If accessibility requires a container definition (e.g., a text input), use a **Ghost Border**: `outline-variant` (#bccac0) at 20% opacity. 
 
 ---
 
 ## 5. Components
 
 ### Buttons
-*   **Primary:** Background: `primary` (#565e74), Text: `on_primary` (#f7f7ff). Corner radius: `md` (12px). No shadow.
-*   **Secondary:** Background: `surface-container-highest` (#dde4e5), Text: `on_surface` (#2d3435).
-*   **Tertiary:** Text-only with an underline that appears on hover.
+- **Primary:** Gradient fill (`primary` to `primary-container`). `12px` (md) rounded corners. Text is `on_primary` (#ffffff).
+- **Secondary:** `surface-container-high` (#e7e8e9) background. No border. Text is `primary` (#006948).
+- **Tertiary:** No background. Text is `secondary` (#515f74). 
+
+### Cards & Lists
+**Strict Rule:** No dividers. Separate list items using `spacing-4` (1.4rem) of vertical white space. If the list is dense, use alternating backgrounds between `surface` and `surface-container-low`.
 
 ### Input Fields
-*   **Style:** Background: `surface-container-lowest` (#ffffff).
-*   **Border:** `outline_variant` at 20% opacity.
-*   **Focus:** Border becomes `primary` (#565e74) at 100% opacity. No "glow" effects.
+Soft containers using `surface-container-highest` (#e1e3e4). When focused, the background shifts to `surface-container-lowest` (#ffffff) with a `primary` (#006948) ghost border (20% opacity).
 
-### Cards
-*   **Rules:** No borders. No dividers.
-*   **Separation:** Use `spacing-6` (2rem) as the default internal padding. Use vertical white space from the spacing scale (`8`, `12`) to separate content sections within the card rather than lines.
-
-### Chips
-*   Used for filtering. Background: `surface-container-low`, Corner Radius: `full`. Text: `label-md`. 
-
-### Specialized Component: The "Content Ledger"
-Instead of a standard Table, use a "Ledger" style. Rows are separated by a 24px gap (`spacing-6`). The "header" is small `label-sm` text. The row itself is a `surface-container-low` strip with a radius of `sm`. It feels like a list of curated items rather than a database export.
+### Floating Utility Bar (App Specific)
+A central, bottom-anchored bar for PDF tools (Merge, Split, Compress). Use the **Glassmorphism** rule: `surface-container-lowest` at 85% opacity, `20px` blur, and a `12px` (md) corner radius. This keeps the document visible behind the tools, maintaining the "Professional Utility" context.
 
 ---
 
-## 6. Do’s and Don'ts
+## 6. Do’s and Don’ts
 
-### Do:
-*   **Embrace Asymmetry:** Align a header to the far left and the action button to the far right, leaving a "void" in the center to create an editorial feel.
-*   **Use Large Radius:** Stick to `lg` (16px) for main containers and `md` (12px) for buttons. It softens the "professional tool" into something human.
-*   **Trust the Spacing:** When in doubt, add more white space. Use `spacing-16` (5.5rem) for section breaks.
+### Do
+- **Do** use `spacing-12` (4rem) or `spacing-16` (5.5rem) for page margins to create an editorial feel.
+- **Do** use the `primary-fixed-dim` (#68dba9) for success states or subtle highlights.
+- **Do** align all text to a strict baseline grid to maintain architectural "silence."
 
-### Don't:
-*   **No 1px Dividers:** Never use a line to separate "Header" from "Body." Use a background tint or whitespace.
-*   **No Purple/Gradients:** Keep the palette strictly neutral. The "soul" comes from the blue-gray `primary` and the off-white textures.
-*   **No High-Contrast Borders:** Avoid `outline` at 100% opacity. It breaks the "Silent Architect" immersion.
-*   **No Standard Grids:** Avoid the "Dashboard Card Soup" (3x3 grid of identical boxes). Vary card widths (e.g., one card at 66% width, another at 33%).
+### Don’t
+- **Don't** use 100% black (#000000). Always use `on_surface` (#191c1d).
+- **Don't** use "Drop Shadows" from standard software defaults. Use the Ambient Shadow formula.
+- **Don't** use lines to separate content. Let the "Deep Emerald" primary accents and background shifts do the work.
+- **Don't** crowd the interface. If a screen feels "busy," double the white space between sections.

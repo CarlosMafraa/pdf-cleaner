@@ -224,13 +224,13 @@ export function PDFEditor({
           </Button>
           
           <div className="hidden sm:block">
-            <p className="label-md mb-0.5">Editing Workspace</p>
+            <p className="label-md mb-0.5 uppercase">Área de Edição</p>
             <div className="flex items-baseline gap-3">
               <h2 className="text-xl font-bold tracking-tight truncate max-w-xs">
                 {file.name}
               </h2>
               <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-widest">
-                {pdfInfo.totalPages} PAG • {Math.round(pdfInfo.width)} × {Math.round(pdfInfo.height)} PT
+                {pdfInfo.totalPages} PÁG • {Math.round(pdfInfo.width)} × {Math.round(pdfInfo.height)} PT
               </p>
             </div>
           </div>
@@ -282,7 +282,7 @@ export function PDFEditor({
               {/* Original */}
               <div className="flex flex-col items-center">
                 {showComparison && (
-                  <p className="label-md mb-4 tracking-[0.2em]">Original Reference</p>
+                  <p className="label-md mb-4 tracking-[0.2em] uppercase">Referência Original</p>
                 )}
                 
                 <div className="relative">
@@ -321,9 +321,9 @@ export function PDFEditor({
               {/* Processado */}
               {showComparison && processedPdfDoc && (
                 <div className="flex flex-col items-center animate-in fade-in slide-in-from-right-4 duration-500">
-                  <p className="label-md mb-4 text-emerald-600 flex items-center gap-2 tracking-[0.2em]">
+                  <p className="label-md mb-4 text-emerald-600 flex items-center gap-2 tracking-[0.2em] uppercase">
                     <Check size={12} />
-                    Processed Result
+                    Resultado Processado
                   </p>
                   
                   <div 
@@ -346,16 +346,16 @@ export function PDFEditor({
           <div className="p-8 space-y-12">
             {/* Instruções */}
             <div>
-              <p className="label-md mb-4 text-primary tracking-[0.2em]">Instructions</p>
+              <p className="label-md mb-4 text-primary tracking-[0.2em] uppercase">Instruções</p>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Adjust the tactile mechanical guides to define your cleanup perimeter. Areas outside the guides will be purged during the export phase.
+                Ajuste as guias mecânicas para definir o perímetro de limpeza. Áreas fora das guias serão removidas na exportação final do arquivo.
               </p>
             </div>
 
             {/* Presets */}
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <p className="label-md text-primary tracking-[0.2em]">Presets</p>
+                <p className="label-md text-primary tracking-[0.2em] uppercase">Favoritos</p>
                 <PresetSelector
                   presets={presets}
                   currentMargins={margins}
@@ -367,7 +367,8 @@ export function PDFEditor({
               <QuickPresets presets={presets} onSelect={handleSelectPreset} />
             </div>
 
-            <div className="h-[1px] bg-foreground/5" />
+            {/* Space instead of divider */}
+            <div className="py-2" />
 
             {/* Ajuste fino */}
             <div className="space-y-4">
@@ -376,7 +377,7 @@ export function PDFEditor({
                 className="w-full justify-between p-0 hover:bg-transparent h-auto"
                 onClick={() => setShowAdvanced(!showAdvanced)}
               >
-                <p className="label-md text-primary tracking-[0.2em]">Mechanical Tuning</p>
+                <p className="label-md text-primary tracking-[0.2em] uppercase">Ajuste Mecânico</p>
                 <ChevronRight 
                   size={12} 
                   className={cn("transition-transform text-primary", showAdvanced && "rotate-90")}
@@ -394,12 +395,12 @@ export function PDFEditor({
               )}
             </div>
 
-            {/* Resumo - Silent Architect Card */}
-            <div className="surface-lowest p-6 space-y-4">
-              <p className="label-md tracking-[0.2em]">Current Metrics</p>
+            {/* Resumo - Metrics Card */}
+            <div className="surface-lowest p-6 space-y-4 rounded-2xl">
+              <p className="label-md tracking-[0.2em] uppercase">Métricas Atuais</p>
               <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[10px] font-mono">
                 <div className="flex justify-between items-center bg-muted/30 p-2 rounded-md">
-                  <span className="text-muted-foreground uppercase opacity-50">Top</span>
+                  <span className="text-muted-foreground uppercase opacity-50">Topo</span>
                   <span className="font-bold">{Math.round(margins.top)}</span>
                 </div>
                 <div className="flex justify-between items-center bg-muted/30 p-2 rounded-md">
@@ -407,11 +408,11 @@ export function PDFEditor({
                   <span className="font-bold">{Math.round(margins.bottom)}</span>
                 </div>
                 <div className="flex justify-between items-center bg-muted/30 p-2 rounded-md">
-                  <span className="text-muted-foreground uppercase opacity-50">Left</span>
+                  <span className="text-muted-foreground uppercase opacity-50">Esq.</span>
                   <span className="font-bold">{Math.round(margins.left)}</span>
                 </div>
                 <div className="flex justify-between items-center bg-muted/30 p-2 rounded-md">
-                  <span className="text-muted-foreground uppercase opacity-50">Right</span>
+                  <span className="text-muted-foreground uppercase opacity-50">Dir.</span>
                   <span className="font-bold">{Math.round(margins.right)}</span>
                 </div>
               </div>
@@ -428,12 +429,12 @@ export function PDFEditor({
                   {isProcessing ? (
                     <div className="flex items-center gap-3">
                       <Loader2 size={20} className="animate-spin" />
-                      <span className="uppercase text-[10px] tracking-widest">Architecting...</span>
+                      <span className="uppercase text-[10px] tracking-widest leading-none">Processando...</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-3">
                       <Eye size={20} />
-                      <span className="uppercase text-[10px] tracking-widest">Preview Architecture</span>
+                      <span className="uppercase text-[10px] tracking-widest leading-none">Visualizar Limpeza</span>
                     </div>
                   )}
                 </Button>
@@ -446,7 +447,7 @@ export function PDFEditor({
                   >
                     <div className="flex items-center gap-3">
                       <EyeOff size={20} />
-                      <span className="uppercase text-[10px] tracking-widest text-primary">Back to Drafting</span>
+                      <span className="uppercase text-[10px] tracking-widest text-primary leading-none">Voltar ao Ajuste</span>
                     </div>
                   </Button>
                   
@@ -456,7 +457,7 @@ export function PDFEditor({
                   >
                     <div className="flex items-center gap-3">
                       <Download size={20} />
-                      <span className="uppercase text-[10px] tracking-widest">Export Archive</span>
+                      <span className="uppercase text-[10px] tracking-widest leading-none">Exportar Arquivo</span>
                     </div>
                   </Button>
                 </div>
