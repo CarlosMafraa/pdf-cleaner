@@ -21,7 +21,7 @@ export function Rulers({ width, height, scale, margins }) {
             y2={rulerSize}
             stroke="currentColor"
             strokeWidth={1}
-            className="text-muted-foreground/50"
+            className="text-primary/40"
           />
           {isMajor && (
             <text
@@ -29,7 +29,7 @@ export function Rulers({ width, height, scale, margins }) {
               y={12}
               fontSize="9"
               fill="currentColor"
-              className="text-muted-foreground font-mono"
+              className="text-primary/70 font-mono"
             >
               {Math.round(i)}
             </text>
@@ -58,7 +58,7 @@ export function Rulers({ width, height, scale, margins }) {
             y2={y}
             stroke="currentColor"
             strokeWidth={1}
-            className="text-muted-foreground/50"
+            className="text-primary/40"
           />
           {isMajor && (
             <text
@@ -66,7 +66,7 @@ export function Rulers({ width, height, scale, margins }) {
               y={y + 3}
               fontSize="9"
               fill="currentColor"
-              className="text-muted-foreground font-mono"
+              className="text-primary/70 font-mono"
               transform={`rotate(-90, 4, ${y})`}
             >
               {Math.round(i)}

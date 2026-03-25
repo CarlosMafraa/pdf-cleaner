@@ -23,19 +23,19 @@ export function MarginControls({ margins, onChange, pdfDimensions }) {
 
   const MarginInput = ({ side, icon: Icon, label }) => (
     <div className="flex items-center gap-4">
-      <div className="flex items-center gap-2 min-w-[70px]">
-        <Icon size={14} className="text-primary opacity-40" />
-        <span className="label-md opacity-60 text-[10px]">{label}</span>
+      <div className="flex items-center gap-3 min-w-[80px]">
+        <Icon size={16} className="text-primary/40" />
+        <span className="label-sm text-primary/60 uppercase pt-0.5">{label}</span>
       </div>
       <div className="relative flex-1">
         <Input
           type="number"
           value={Math.round(margins[side])}
           onChange={(e) => handleChange(side, e.target.value)}
-          className="h-10 text-xs pr-8 font-mono bg-background border-none rounded-xl focus-visible:ring-1 focus-visible:ring-primary/20"
+          className="h-12 text-base pr-10 font-mono bg-muted border-none rounded-2xl focus-visible:ring-1 focus-visible:ring-primary/10 transition-shadow"
           min="0"
         />
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[9px] font-bold text-muted-foreground uppercase tracking-widest pointer-events-none">
+        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-primary/20 uppercase tracking-widest pointer-events-none">
           PT
         </span>
       </div>
@@ -43,20 +43,7 @@ export function MarginControls({ margins, onChange, pdfDimensions }) {
   )
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <p className="label-md tracking-[0.2em] text-primary uppercase">Ajuste Fino</p>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleReset}
-          className="h-8 text-[10px] gap-2 uppercase tracking-widest font-bold text-muted-foreground hover:text-primary transition-colors"
-        >
-          <RotateCcw size={12} />
-          Resetar
-        </Button>
-      </div>
-      
+    <div className="space-y-8 h-full flex flex-col pt-2">
       <div className="grid grid-cols-1 gap-4">
         <MarginInput side="top" icon={ArrowUp} label="Topo" />
         <MarginInput side="bottom" icon={ArrowDown} label="Base" />
@@ -64,36 +51,50 @@ export function MarginControls({ margins, onChange, pdfDimensions }) {
         <MarginInput side="right" icon={ArrowRight} label="Dir." />
       </div>
 
-      {/* Visual Tuning Reference */}
-      <div className="mt-8 p-6 surface-lowest rounded-2xl">
-        <div className="relative w-full aspect-[3/4] max-w-[120px] mx-auto bg-muted rounded-lg overflow-hidden ring-1 ring-foreground/5 transition-all duration-500">
+      <div className="pt-4 flex justify-end">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleReset}
+          className="h-9 px-4 rounded-xl label-sm lowercase gap-2 text-primary/40 hover:text-primary hover:bg-primary/5 transition-all"
+        >
+          <RotateCcw size={14} />
+          limpar ajustes
+        </Button>
+      </div>
+
+      {/* Visual Tuning Reference - Editorial Mirror */}
+      <div className="mt-auto pb-4">
+        <div className="relative w-full aspect-[4/5] max-w-[140px] mx-auto bg-muted rounded-[2rem] overflow-hidden ring-1 ring-primary/5 transition-all duration-700 shadow-inner">
+          <div className="absolute inset-4 border border-primary/5 rounded-2xl opacity-50" />
+          
           {margins.top > 0 && (
             <div 
-              className="absolute top-0 left-0 right-0 bg-primary/10 border-b border-primary/20 transition-all duration-300"
-              style={{ height: `${Math.min(margins.top / 8, 45)}%` }}
+              className="absolute top-0 left-0 right-0 bg-primary/20 backdrop-blur-sm transition-all duration-500"
+              style={{ height: `${Math.min(margins.top / 8, 48)}%` }}
             />
           )}
           {margins.bottom > 0 && (
             <div 
-              className="absolute bottom-0 left-0 right-0 bg-primary/10 border-t border-primary/20 transition-all duration-300"
-              style={{ height: `${Math.min(margins.bottom / 8, 45)}%` }}
+              className="absolute bottom-0 left-0 right-0 bg-primary/20 backdrop-blur-sm transition-all duration-500"
+              style={{ height: `${Math.min(margins.bottom / 8, 48)}%` }}
             />
           )}
           {margins.left > 0 && (
             <div 
-              className="absolute top-0 bottom-0 left-0 bg-primary/10 border-r border-primary/20 transition-all duration-300"
-              style={{ width: `${Math.min(margins.left / 6, 45)}%` }}
+              className="absolute top-0 bottom-0 left-0 bg-primary/20 backdrop-blur-sm transition-all duration-500"
+              style={{ width: `${Math.min(margins.left / 6, 48)}%` }}
             />
           )}
           {margins.right > 0 && (
             <div 
-              className="absolute top-0 bottom-0 right-0 bg-primary/10 border-l border-primary/20 transition-all duration-300"
-              style={{ width: `${Math.min(margins.right / 6, 45)}%` }}
+              className="absolute top-0 bottom-0 right-0 bg-primary/20 backdrop-blur-sm transition-all duration-500"
+              style={{ width: `${Math.min(margins.right / 6, 48)}%` }}
             />
           )}
           
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="label-md opacity-20 tracking-[0.3em] uppercase">Arquivo</span>
+            <span className="label-sm opacity-10 tracking-[0.4em] uppercase text-[10px] select-none">Editorial</span>
           </div>
         </div>
       </div>

@@ -211,45 +211,45 @@ export function PDFEditor({
 
   return (
     <div className="h-full flex flex-col bg-background" ref={containerRef}>
-      {/* Header - Editorial Shift instead of border */}
-      <div className="flex items-center justify-between px-6 sm:px-12 py-4 bg-muted">
+      {/* Header - Editorial Atelier */}
+      <div className="flex items-center justify-between px-6 sm:px-12 py-4 bg-muted/40 backdrop-blur-md">
         <div className="flex items-center gap-6">
           <Button 
             variant="ghost" 
             size="icon" 
             onClick={onBack}
-            className="rounded-full hover:bg-background/50"
+            className="rounded-full hover:bg-background/20"
           >
             <ArrowLeft size={20} />
           </Button>
           
           <div className="hidden sm:block">
-            <p className="label-md mb-0.5 uppercase">Área de Edição</p>
-            <div className="flex items-baseline gap-3">
-              <h2 className="text-xl font-bold tracking-tight truncate max-w-xs">
+            <p className="label-sm mb-0.5 text-primary/60">Atelier de Edição</p>
+            <div className="flex items-baseline gap-4">
+              <h2 className="title-md truncate max-w-sm">
                 {file.name}
               </h2>
-              <p className="text-[10px] text-muted-foreground font-mono uppercase tracking-widest">
-                {pdfInfo.totalPages} PÁG • {Math.round(pdfInfo.width)} × {Math.round(pdfInfo.height)} PT
+              <p className="label-sm font-mono opacity-40">
+                {pdfInfo.totalPages} PÁG • {Math.round(pdfInfo.width)}×{Math.round(pdfInfo.height)}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
           {/* Navegação de páginas */}
           {pdfInfo.totalPages > 1 && (
-            <div className="flex items-center gap-2 bg-background/50 rounded-xl p-1">
+            <div className="flex items-center gap-2 bg-muted rounded-full p-1 px-3">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="h-8 w-8 rounded-lg"
+                className="h-7 w-7 rounded-full"
               >
                 <ChevronLeft size={16} />
               </Button>
-              <span className="px-3 text-[10px] font-bold font-mono tracking-tighter">
+              <span className="px-2 label-sm font-mono">
                 {currentPage} / {pdfInfo.totalPages}
               </span>
               <Button
@@ -257,7 +257,7 @@ export function PDFEditor({
                 size="icon"
                 onClick={() => setCurrentPage(p => Math.min(pdfInfo.totalPages, p + 1))}
                 disabled={currentPage === pdfInfo.totalPages}
-                className="h-8 w-8 rounded-lg"
+                className="h-7 w-7 rounded-full"
               >
                 <ChevronRight size={16} />
               </Button>
@@ -274,15 +274,15 @@ export function PDFEditor({
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col sm:flex-row overflow-hidden">
-        {/* Canvas area */}
-        <div className="flex-1 overflow-auto bg-background p-4 sm:p-12 scrollbar-thin" ref={canvasContainerRef}>
+      <div className="flex-1 flex flex-col sm:flex-row overflow-hidden relative">
+        {/* Canvas area (Recessed) */}
+        <div className="flex-1 overflow-auto bg-muted/20 p-4 sm:p-12 scrollbar-thin" ref={canvasContainerRef}>
           <div className="flex flex-col items-center min-h-full justify-center">
-            <div className={cn("flex flex-col sm:flex-row gap-12 items-start", showComparison ? "justify-center" : "justify-center")}>
+            <div className={cn("flex flex-col sm:flex-row gap-16 items-start", showComparison ? "justify-center" : "justify-center")}>
               {/* Original */}
               <div className="flex flex-col items-center">
                 {showComparison && (
-                  <p className="label-md mb-4 tracking-[0.2em] uppercase">Referência Original</p>
+                  <p className="label-sm mb-6 text-primary/40 uppercase tracking-[0.2em]">Referência Original</p>
                 )}
                 
                 <div className="relative">
@@ -294,7 +294,7 @@ export function PDFEditor({
                   />
                   
                   <div 
-                    className="relative canvas-container surface-lowest"
+                    className="relative canvas-container ambient-shadow"
                     style={{ 
                       marginLeft: 24, 
                       marginTop: 24,
@@ -321,13 +321,13 @@ export function PDFEditor({
               {/* Processado */}
               {showComparison && processedPdfDoc && (
                 <div className="flex flex-col items-center animate-in fade-in slide-in-from-right-4 duration-500">
-                  <p className="label-md mb-4 text-emerald-600 flex items-center gap-2 tracking-[0.2em] uppercase">
-                    <Check size={12} />
-                    Resultado Processado
+                  <p className="label-sm mb-6 text-primary flex items-center gap-2 uppercase tracking-[0.2em]">
+                    <Check size={14} />
+                    Resultado Final
                   </p>
                   
                   <div 
-                    className="relative canvas-container surface-lowest ring-1 ring-emerald-500/10"
+                    className="relative canvas-container shadow-2xl ring-1 ring-primary/5"
                     style={{ 
                       width: scaledDimensions.width,
                       height: scaledDimensions.height
@@ -341,123 +341,125 @@ export function PDFEditor({
           </div>
         </div>
 
-        {/* Sidebar - Surface Container Low */}
-        <div className="w-full sm:w-80 bg-muted overflow-y-auto scrollbar-thin shadow-[0_-8px_32px_rgba(0,0,0,0.05)] sm:shadow-none">
-          <div className="p-8 space-y-12">
-            {/* Instruções */}
-            <div>
-              <p className="label-md mb-4 text-primary tracking-[0.2em] uppercase">Instruções</p>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Ajuste as guias mecânicas para definir o perímetro de limpeza. Áreas fora das guias serão removidas na exportação final do arquivo.
-              </p>
+        {/* Sidebar - Organic Editorial (Soft Cream) */}
+        <div className="w-full sm:w-80 bg-background flex flex-col h-full border-l border-primary/5 shadow-[-12px_0_40px_rgba(132,83,31,0.03)] relative z-40">
+          <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+            {/* Functional Tabs - 8px Grid Alignment */}
+            <div className="flex px-4 py-2 bg-muted/30 m-6 rounded-2xl">
+               {[
+                 { id: 'settings', label: 'Favoritos' },
+                 { id: 'manual', label: 'Manual' }
+               ].map((tab) => (
+                 <button 
+                  key={tab.id}
+                  onClick={() => setShowAdvanced(tab.id === 'manual')}
+                  className={cn(
+                    "flex-1 label-sm lowercase pt-2.5 pb-2 transition-all rounded-xl",
+                    (showAdvanced === (tab.id === 'manual')) 
+                      ? "bg-card text-primary shadow-sm" 
+                      : "text-muted-foreground/50 hover:text-primary/70"
+                  )}
+                 >
+                   {tab.label}
+                 </button>
+               ))}
             </div>
 
-            {/* Presets */}
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <p className="label-md text-primary tracking-[0.2em] uppercase">Favoritos</p>
-                <PresetSelector
-                  presets={presets}
-                  currentMargins={margins}
-                  onSelectPreset={handleSelectPreset}
-                  onSavePreset={addPreset}
-                  onDeletePreset={deletePreset}
-                />
-              </div>
-              <QuickPresets presets={presets} onSelect={handleSelectPreset} />
-            </div>
-
-            {/* Space instead of divider */}
-            <div className="py-2" />
-
-            {/* Ajuste fino */}
-            <div className="space-y-4">
-               <Button
-                variant="ghost"
-                className="w-full justify-between p-0 hover:bg-transparent h-auto"
-                onClick={() => setShowAdvanced(!showAdvanced)}
-              >
-                <p className="label-md text-primary tracking-[0.2em] uppercase">Ajuste Mecânico</p>
-                <ChevronRight 
-                  size={12} 
-                  className={cn("transition-transform text-primary", showAdvanced && "rotate-90")}
-                />
-              </Button>
-
-              {showAdvanced && (
-                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                  <MarginControls
-                    margins={margins}
-                    onChange={setMargins}
-                    pdfDimensions={pdfInfo}
-                  />
+            <div className="flex-1 px-8 pb-6 overflow-hidden">
+              {/* Contextual Panel - Configuração (Presets) */}
+              {!showAdvanced ? (
+                <div className="space-y-6 animate-in fade-in duration-300">
+                  <div className="flex items-center justify-between">
+                    <h3 className="title-md opacity-100">Biblioteca</h3>
+                    <PresetSelector
+                      presets={presets}
+                      currentMargins={margins}
+                      onSelectPreset={handleSelectPreset}
+                      onSavePreset={addPreset}
+                      onDeletePreset={deletePreset}
+                    />
+                  </div>
+                  <QuickPresets presets={presets} onSelect={handleSelectPreset} />
+                </div>
+              ) : (
+                /* Contextual Panel - Manual Adjustment */
+                <div className="space-y-8 animate-in fade-in duration-300 flex flex-col h-full">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="title-md opacity-100">Ajuste Fino</h3>
+                      <Badge variant="secondary" className="bg-primary text-white text-[10px] px-2 py-0 border-none rounded">PT</Badge>
+                    </div>
+                    
+                    {/* Live Metrics - Legibility First (20px) */}
+                    <div className="grid grid-cols-2 gap-3">
+                       <div className="bg-muted p-4 rounded-2xl">
+                          <p className="label-sm text-[10px] opacity-40 mb-1">Eixo Vertical</p>
+                          <p className="text-xl font-bold font-mono text-primary leading-none">
+                            {Math.round(margins.top)}<span className="opacity-20 mx-1">/</span>{Math.round(margins.bottom)}
+                          </p>
+                       </div>
+                       <div className="bg-muted p-4 rounded-2xl">
+                          <p className="label-sm text-[10px] opacity-40 mb-1">Eixo Horiz</p>
+                          <p className="text-xl font-bold font-mono text-primary leading-none">
+                            {Math.round(margins.left)}<span className="opacity-20 mx-1">/</span>{Math.round(margins.right)}
+                          </p>
+                       </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex-1 min-h-0 pt-2">
+                    <MarginControls
+                      margins={margins}
+                      onChange={setMargins}
+                      pdfDimensions={pdfInfo}
+                    />
+                  </div>
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Resumo - Metrics Card */}
-            <div className="surface-lowest p-6 space-y-4 rounded-2xl">
-              <p className="label-md tracking-[0.2em] uppercase">Métricas Atuais</p>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-[10px] font-mono">
-                <div className="flex justify-between items-center bg-muted/30 p-2 rounded-md">
-                  <span className="text-muted-foreground uppercase opacity-50">Topo</span>
-                  <span className="font-bold">{Math.round(margins.top)}</span>
-                </div>
-                <div className="flex justify-between items-center bg-muted/30 p-2 rounded-md">
-                  <span className="text-muted-foreground uppercase opacity-50">Base</span>
-                  <span className="font-bold">{Math.round(margins.bottom)}</span>
-                </div>
-                <div className="flex justify-between items-center bg-muted/30 p-2 rounded-md">
-                  <span className="text-muted-foreground uppercase opacity-50">Esq.</span>
-                  <span className="font-bold">{Math.round(margins.left)}</span>
-                </div>
-                <div className="flex justify-between items-center bg-muted/30 p-2 rounded-md">
-                  <span className="text-muted-foreground uppercase opacity-50">Dir.</span>
-                  <span className="font-bold">{Math.round(margins.right)}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Ações */}
-            <div className="pt-8 space-y-4">
+          {/* Primary Operations - Anchored Bottom */}
+          <div className="p-8 pt-0 mt-auto">
+            <div className="p-2 bg-card/40 rounded-[1.25rem] ring-1 ring-primary/5 shadow-xl glass-panel">
               {!showComparison ? (
                 <Button
                   onClick={handleProcess}
                   disabled={isProcessing}
-                  className="w-full h-14 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-bold tracking-tight shadow-none"
+                  className="w-full h-14 rounded-xl btn-primary-atelier font-bold tracking-tight shadow-none border-none shrink-0"
                 >
                   {isProcessing ? (
                     <div className="flex items-center gap-3">
                       <Loader2 size={20} className="animate-spin" />
-                      <span className="uppercase text-[10px] tracking-widest leading-none">Processando...</span>
+                      <span className="uppercase label-sm tracking-widest text-white leading-none pt-0.5">Limpando...</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-3">
                       <Eye size={20} />
-                      <span className="uppercase text-[10px] tracking-widest leading-none">Visualizar Limpeza</span>
+                      <span className="uppercase label-sm tracking-widest text-white leading-none pt-0.5">Pré-Visualização</span>
                     </div>
                   )}
                 </Button>
               ) : (
-                <div className="space-y-4 animate-in fade-in duration-500">
+                <div className="flex flex-col gap-2">
                   <Button
-                    variant="secondary"
+                    variant="ghost"
                     onClick={() => setShowComparison(false)}
-                    className="w-full h-14 rounded-2xl bg-background hover:bg-muted font-bold tracking-tight text-foreground shadow-none"
+                    className="w-full h-12 rounded-xl text-primary font-bold tracking-tight hover:bg-muted/50 transition-colors"
                   >
-                    <div className="flex items-center gap-3">
-                      <EyeOff size={20} />
-                      <span className="uppercase text-[10px] tracking-widest text-primary leading-none">Voltar ao Ajuste</span>
+                    <div className="flex items-center gap-2 label-sm uppercase tracking-widest pt-0.5">
+                      <EyeOff size={18} />
+                      Voltar ao Ajuste
                     </div>
                   </Button>
                   
                   <Button
                     onClick={handleDownload}
-                    className="w-full h-14 rounded-2xl bg-foreground text-background hover:opacity-90 font-bold tracking-tight shadow-none transition-opacity"
+                    className="w-full h-14 rounded-xl btn-primary-atelier font-bold tracking-tight shadow-none border-none"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       <Download size={20} />
-                      <span className="uppercase text-[10px] tracking-widest leading-none">Exportar Arquivo</span>
+                      <span className="uppercase label-sm tracking-widest text-white leading-none pt-0.5">Exportar Arquivo</span>
                     </div>
                   </Button>
                 </div>

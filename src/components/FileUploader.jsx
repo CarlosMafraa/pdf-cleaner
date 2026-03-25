@@ -46,19 +46,21 @@ export function FileUploader({ onFilesSelected, multiple = true }) {
   }, [handleFiles])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div
         onClick={() => inputRef.current?.click()}
         onDrop={handleDrop}
         onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
         onDragLeave={(e) => { e.preventDefault(); setIsDragOver(false) }}
         className={cn(
-          "relative border-2 border-dashed rounded-[2rem] p-8 sm:p-12 text-center cursor-pointer transition-all duration-300",
+          "relative rounded-[3rem] p-12 sm:p-20 text-center cursor-pointer transition-all duration-500 overflow-hidden group",
           isDragOver 
-            ? "border-primary bg-primary/5 scale-[1.01]" 
-            : "border-foreground/5 hover:bg-muted/50"
+            ? "bg-primary/5 scale-[1.02] ring-2 ring-primary/20" 
+            : "bg-muted/40 hover:bg-muted/60 ring-1 ring-primary/5"
         )}
       >
+        <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
+        
         <input
           ref={inputRef}
           type="file"
@@ -68,42 +70,45 @@ export function FileUploader({ onFilesSelected, multiple = true }) {
           className="hidden"
         />
 
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center relative z-10">
           <div className={cn(
-            "w-16 h-16 rounded-3xl flex items-center justify-center mb-6 transition-all duration-300",
-            isDragOver ? "bg-primary text-primary-foreground scale-110" : "bg-muted text-muted-foreground"
+            "w-20 h-20 rounded-[2.5rem] flex items-center justify-center mb-10 transition-all duration-500 shadow-sm",
+            isDragOver ? "bg-primary text-white scale-110 rotate-6" : "bg-card text-primary/40 group-hover:text-primary group-hover:scale-105"
           )}>
             <Upload 
-              size={28} 
-              className="transition-colors"
+              size={32} 
+              className="transition-transform duration-500 group-hover:-translate-y-1"
             />
           </div>
           
-          <h3 className="text-xl font-bold mb-1 tracking-tight">
-            {isDragOver ? 'Solte para processar' : 'Carregar Documentos'}
+          <h3 className="title-md font-bold mb-3 tracking-tight text-primary">
+            {isDragOver ? 'Pode Soltar Agora' : 'Inicie sua Limpeza'}
           </h3>
           
-          <p className="text-xs text-muted-foreground mb-6">
-            Arraste e solte ou selecione PDFs
+          <p className="label-sm text-primary/40 mb-10 tracking-widest uppercase">
+            {isDragOver ? 'Processando Documentos...' : 'Selecione ou arraste seus PDFs aqui'}
           </p>
           
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-               <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-               <p className="label-md uppercase">Padrão PDF</p>
+          <div className="flex items-center gap-10">
+            <div className="flex items-center gap-3">
+               <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
+               <p className="label-sm font-mono text-[10px] uppercase tracking-[0.2em] opacity-40">Standard PDF</p>
             </div>
-            <div className="flex items-center gap-2">
-               <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
-               <p className="label-md uppercase">Máx 50MB</p>
+            <div className="flex items-center gap-3">
+               <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
+               <p className="label-sm font-mono text-[10px] uppercase tracking-[0.2em] opacity-40">Secure Node</p>
             </div>
           </div>
         </div>
       </div>
 
       {error && (
-        <div className="flex items-start gap-3 p-6 bg-destructive/5 rounded-2xl text-sm text-destructive leading-relaxed">
-          <AlertCircle size={18} className="flex-shrink-0 mt-0.5" />
-          <span className="font-medium">{error}</span>
+        <div className="flex items-start gap-4 p-8 bg-destructive/5 rounded-3xl text-sm text-destructive animate-in slide-in-from-top-4 duration-300">
+          <AlertCircle size={20} className="flex-shrink-0 mt-0.5" />
+          <div className="space-y-1">
+             <p className="font-bold label-sm uppercase tracking-widest">Ops, houve um erro</p>
+             <p className="opacity-70 leading-relaxed">{error}</p>
+          </div>
         </div>
       )}
     </div>
@@ -114,29 +119,33 @@ export function FileList({ files, onRemove }) {
   if (files.length === 0) return null
 
   return (
-    <div className="space-y-6">
-      <p className="label-md tracking-[0.2em] text-primary uppercase">
-        Fila de Documentos ({files.length})
-      </p>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="flex items-center justify-between px-2">
+        <p className="label-sm tracking-[0.3em] text-primary uppercase font-bold">
+          Fila de Atendimento <span className="opacity-20 ml-2">[{files.length}]</span>
+        </p>
+      </div>
       
-      <div className="space-y-3 max-h-64 overflow-y-auto scrollbar-thin pr-2">
+      <div className="grid gap-3 max-h-[340px] overflow-y-auto scrollbar-thin pr-4 pt-1">
         {files.map((file, index) => (
           <div 
             key={`${file.name}-${index}`}
-            className="flex items-center justify-between p-4 bg-muted/30 rounded-xl group hover:bg-muted/60 transition-colors"
+            className="flex items-center justify-between p-5 bg-muted rounded-[1.5rem] group hover:bg-card hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 ring-1 ring-primary/[0.02]"
           >
-            <div className="flex items-center gap-4 min-w-0">
-              <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center flex-shrink-0">
-                <FileText size={20} className="text-primary/60" />
+            <div className="flex items-center gap-5 min-w-0">
+              <div className="w-12 h-12 bg-card rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm border border-primary/[0.03]">
+                <FileText size={22} className="text-primary/40 group-hover:text-primary transition-colors" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-bold truncate text-foreground">
+                <p className="text-sm font-bold truncate text-foreground group-hover:text-primary transition-colors">
                   {file.name}
                 </p>
-                <div className="flex items-center gap-3">
-                   <p className="text-[10px] font-mono text-muted-foreground uppercase">
+                <div className="flex items-center gap-3 mt-1">
+                   <p className="text-[10px] font-mono text-primary/40 uppercase tracking-widest">
                      {(file.size / 1024 / 1024).toFixed(2)} MB
                    </p>
+                   <div className="w-1 h-1 rounded-full bg-primary/10" />
+                   <p className="text-[10px] font-mono text-primary/40 uppercase tracking-widest italic">Aguardando</p>
                 </div>
               </div>
             </div>
@@ -145,9 +154,9 @@ export function FileList({ files, onRemove }) {
               variant="ghost"
               size="icon"
               onClick={() => onRemove(index)}
-              className="opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 text-muted-foreground hover:text-destructive"
+              className="h-10 w-10 text-primary/20 hover:text-destructive hover:bg-destructive/5 rounded-xl transition-all"
             >
-              <X size={16} />
+              <X size={18} />
             </Button>
           </div>
         ))}

@@ -201,45 +201,58 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header - Compact */}
-      <header className="bg-muted px-6 sm:px-12 py-4">
+      {/* Header - Editorial Atelier Branding */}
+      <header className="px-6 sm:px-12 py-8">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="w-8 h-8 bg-primary flex items-center justify-center rounded-lg">
-              <FileText size={16} className="text-primary-foreground" />
+            <div className="w-10 h-10 bg-primary flex items-center justify-center rounded-2xl shadow-lg rotate-3">
+              <FileText size={20} className="text-white -rotate-3" />
             </div>
-            <p className="label-md font-bold tracking-[0.2em] text-foreground uppercase pt-0.5">
-              PDF CLEANER PRO
-            </p>
+            <div className="flex flex-col">
+              <p className="label-sm font-bold tracking-[0.4em] text-primary uppercase leading-none">
+                PDF CLEANER
+              </p>
+              <p className="text-[10px] font-mono opacity-40 uppercase tracking-widest mt-1">PRO EDITION v2.0</p>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="flex-1 max-w-7xl mx-auto px-6 sm:px-12 w-full">
-        {/* Simplified Hero Section */}
-        <section className="pt-12 pb-16">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-center">
+        {/* Hero Section - High-End Editorial */}
+        <section className="pt-16 pb-24">
+          <div className="grid lg:grid-cols-2 gap-16 lg:gap-32 items-center">
             {/* Left Column: Context */}
-            <div className="space-y-6">
-              <h1 className="text-5xl sm:text-6xl font-bold tracking-tighter leading-none text-foreground">
-                PDF Cleaner Pro
+            <div className="space-y-8 animate-in fade-in slide-in-from-left-8 duration-700">
+              <h1 className="display-sm text-primary leading-[1.1]">
+                Limpeza Profissional <br/>
+                <span className="opacity-40 italic">de Documentos.</span>
               </h1>
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-xl">
-                Uma ferramenta web para limpeza de documentos PDF. Remova assinaturas digitais, marcas d'água e bordas indesejadas usando réguas interativas diretamente sobre o documento.
+              <p className="body-large max-w-lg opacity-70">
+                Uma ferramenta web dedicada à restauração de PDFs. Remova assinaturas, marcas d'água e elementos indesejados através de uma interface de precisão inspirada em ateliês de design.
               </p>
+              
+              <div className="flex items-center gap-6 pt-4">
+                <div className="flex -space-x-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="w-10 h-10 rounded-full border-2 border-background bg-muted flex items-center justify-center text-[10px] font-bold">PDF</div>
+                  ))}
+                </div>
+                <p className="label-sm text-primary/60 italic">+12k documentos processados localmente</p>
+              </div>
             </div>
 
             {/* Right Column: Interactive Dropzone */}
-            <div className="relative">
-              <div className="absolute -inset-4 bg-muted rounded-[2.5rem] -z-10" />
-              <div className="bg-background rounded-3xl p-6 sm:p-10 shadow-[0_12px_40px_rgba(45,52,53,0.06)] ring-1 ring-foreground/[0.03]">
+            <div className="relative animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+              <div className="absolute -inset-10 bg-primary/2 rounded-[3rem] -z-10 blur-3xl opacity-50" />
+              <div className="bg-card rounded-[2.5rem] p-8 sm:p-12 shadow-[0_32px_64px_rgba(132,83,31,0.06)] ring-1 ring-primary/5">
                 <FileUploader 
                   onFilesSelected={handleFilesSelected}
                   multiple={true}
                 />
                 
                 {files.length > 0 && (
-                  <div className="mt-8 pt-8 border-t border-muted">
+                  <div className="mt-10 pt-10 border-t border-primary/5">
                     <FileList files={files} onRemove={handleRemoveFile} />
                   </div>
                 )}
@@ -248,47 +261,54 @@ function App() {
           </div>
         </section>
 
-        {/* Section 3: Dual Cards - Prominent Symmetric Titles */}
-        <div className="grid md:grid-cols-2 gap-8 pb-40 py-24">
-           {/* O que faz - Card */}
-           <section className="bg-muted px-10 py-12 rounded-2xl space-y-12">
-              <h2 className="text-2xl font-bold tracking-tight text-foreground">Funcionalidades</h2>
-              <div className="space-y-8">
+        {/* Features - Tonal Contrast */}
+        <div className="grid md:grid-cols-2 gap-12 py-32 border-t border-primary/5">
+           {/* Section 1: Capabilities */}
+           <section className="space-y-12">
+              <div className="space-y-4">
+                <h2 className="title-md text-primary font-bold uppercase tracking-[0.2em]">Funcionalidades</h2>
+                <div className="h-0.5 w-12 bg-primary/20" />
+              </div>
+              
+              <div className="grid sm:grid-cols-1 gap-10">
                  {[
-                   { icon: FileText, title: "Assinaturas", desc: "Elimina anotações de assinatura digital" },
-                   { icon: Ruler, title: "Bordas", desc: "Réguas para definir corte em topo e laterais" },
-                   { icon: Shield, title: "Local", desc: "100% no navegador, sem upload para servidores" }
+                   { icon: FileText, title: "Limpeza de Camadas", desc: "Identifica e neutraliza assinaturas digitais e anotações nativas." },
+                   { icon: Ruler, title: "Corte de Precisão", desc: "Réguas milimétricas para definir o perímetro exato de exibição." },
+                   { icon: Shield, title: "Segurança Absoluta", desc: "Processamento síncrono no navegador. Seus dados nunca saem da máquina." }
                  ].map((feat, i) => (
-                   <div key={i} className="flex gap-6 items-start group">
-                      <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center shrink-0 shadow-sm transition-all group-hover:scale-105">
-                         <feat.icon size={18} className="text-primary" />
+                   <div key={i} className="flex gap-8 items-start group">
+                      <div className="w-12 h-12 bg-muted rounded-2xl flex items-center justify-center shrink-0 shadow-sm group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                         <feat.icon size={20} className="transition-colors" />
                       </div>
-                      <div className="pt-0.5">
-                         <h3 className="font-bold text-sm text-foreground mb-1">{feat.title}</h3>
-                         <p className="text-xs text-muted-foreground leading-relaxed">{feat.desc}</p>
+                      <div className="pt-1.5">
+                         <h3 className="title-md text-foreground mb-2">{feat.title}</h3>
+                         <p className="body-md opacity-60 leading-relaxed">{feat.desc}</p>
                       </div>
                    </div>
                  ))}
               </div>
            </section>
 
-           {/* Diferenciais - Card */}
-           <section className="bg-muted px-10 py-12 rounded-2xl space-y-12">
-              <h2 className="text-2xl font-bold tracking-tight text-foreground">Diferenciais</h2>
+           {/* Section 2: Values */}
+           <section className="bg-muted p-12 rounded-[2.5rem] space-y-12">
+              <div className="space-y-4">
+                <h2 className="title-md text-primary font-bold uppercase tracking-[0.2em]">O Compromisso</h2>
+                <div className="h-0.5 w-12 bg-primary/20" />
+              </div>
+
               <div className="space-y-8">
                  {[
-                   { icon: Check, title: "Privacidade", desc: "Processamento 100% local no navegador" },
-                   { icon: Check, title: "Custo Zero", desc: "Sem limites de uso ou assinaturas mensais" },
-                   { icon: Check, title: "Nativo", desc: "Interface intuitiva inspirada em ferramentas de design" },
-                   { icon: Check, title: "Prático", desc: "Hospedagem simples, rápida e gratuita" }
+                   { title: "Soberania de Dados", desc: "Todo o processamento ocorre no seu hardware local." },
+                   { title: "Acesso Livre", desc: "Sem assinaturas, sem logins, sem interrupções." },
+                   { title: "Interface Editorial", desc: "Design focado em legibilidade e redução de fadiga visual." }
                  ].map((diff, i) => (
-                   <div key={i} className="flex gap-6 items-start group">
-                      <div className="w-10 h-10 bg-background rounded-lg flex items-center justify-center shrink-0 shadow-sm transition-all group-hover:scale-105">
-                         <diff.icon size={18} className="text-primary" />
-                      </div>
-                      <div className="pt-0.5">
-                         <h3 className="font-bold text-sm text-foreground mb-1">{diff.title}</h3>
-                         <p className="text-xs text-muted-foreground leading-relaxed">{diff.desc}</p>
+                   <div key={i} className="flex gap-6 items-start">
+                      <div className="pt-1.5">
+                         <h3 className="title-md text-foreground mb-2 flex items-center gap-3">
+                           <div className="w-1.5 h-1.5 bg-primary rounded-full" />
+                           {diff.title}
+                         </h3>
+                         <p className="body-md opacity-60 leading-relaxed pl-4.5">{diff.desc}</p>
                       </div>
                    </div>
                  ))}
@@ -297,12 +317,16 @@ function App() {
         </div>
       </main>
 
-      {/* Footer - Minimal */}
-      <footer className="bg-muted px-6 sm:px-12 py-8 mt-auto">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 border-t border-foreground/5 pt-8">
-          <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-            PDF Cleaner Pro &copy; 2026. Processamento Local e Gratuito.
+      {/* Footer - Subtle */}
+      <footer className="px-6 sm:px-12 py-12 bg-muted/30">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 py-8 border-t border-primary/5">
+          <p className="label-sm text-primary/40 font-bold uppercase tracking-widest">
+            PDF Cleaner Pro &copy; 2026. Design in Organic Editorial.
           </p>
+          <div className="flex gap-8">
+            <span className="label-sm text-primary/20 uppercase tracking-widest">v2.0.4 - Alpha</span>
+            <span className="label-sm text-primary/20 uppercase tracking-widest">Sem Cookies</span>
+          </div>
         </div>
       </footer>
     </div>

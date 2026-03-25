@@ -4,53 +4,33 @@
 
 @layer base {
   :root {
-    /* The Signature Palette */
-    --background: 0 0% 98%;           /* #f9f9f9 - surface */
-    --foreground: 184 8% 19%;         /* #2d3435 - on_surface */
+    /* The Organic Editorial Palette (The Digital Atelier) */
+    --background: 34 100% 97%;      /* #FFF8F0 - Soft Cream Skin */
+    --foreground: 45 30% 10%;       /* #1F1B11 - Deep Charcoal On-Surface */
     
-    --card: 0 0% 100%;                /* #ffffff - surface-container-lowest */
-    --card-foreground: 184 8% 19%;
+    --primary: 161 100% 21%;        /* #006948 - Emerald Archive */
+    --primary-foreground: 0 0% 100%; 
+    --primary-container: 161 68% 35%; /* #1B8563 - Emerald Container */
     
-    --popover: 0 0% 100%;
-    --popover-foreground: 184 8% 19%;
+    --secondary: 32 63% 32%;        /* #84531F - Terracotta Roast */
+    --secondary-foreground: 32 63% 95%; /* #FFF4EA - On Secondary */
     
-    --primary: 224 15% 40%;           /* #565e74 - primary */
-    --primary-foreground: 224 20% 98%;    /* #f7f7ff - on_primary */
+    --muted: 38 46% 91%;            /* #F6EDDC - Recessed Content (Soft Beige) */
+    --muted-foreground: 154 7% 28%;  /* #404945 - Forest Slate Body */
     
-    --secondary: 184 8% 89%;          /* #dde4e5 - surface-container-highest */
-    --secondary-foreground: 184 8% 19%;
+    --accent: 15 100% 17%;          /* #5A1600 - Earth Red */
+    --accent-foreground: 15 67% 52%; /* #D65A31 - Human Accent */
     
-    --muted: 180 5% 95%;              /* #f2f4f4 - surface-container-low */
-    --muted-foreground: 184 4% 37%;    /* #5a6061 - on_surface_variant */
+    --card: 0 0% 100%;              /* #FFFFFF - Paper */
+    --border: 140 6% 77%;           /* #C0C9C3 - Ghost Border base */
     
-    --accent: 180 5% 95%;
-    --accent-foreground: 184 8% 19%;
-    
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    
-    --border: 184 6% 69%;             /* #adb3b4 - outline-variant (use with opacity) */
-    --input: 184 6% 69%;
-    --ring: 224 15% 40%;
-    
-    --radius: 1rem;                   /* lg: 16px */
-  }
-
-  .dark {
-    --background: 184 8% 8%;
-    --foreground: 180 5% 95%;
-    --card: 184 8% 10%;
-    --card-foreground: 180 5% 95%;
-    --primary: 224 15% 60%;
-    --primary-foreground: 184 8% 8%;
-    --muted: 184 5% 12%;
-    --muted-foreground: 184 5% 70%;
+    --radius: 1rem;
   }
 }
 
 @layer base {
   * {
-    border-color: transparent; /* Padrão: sem bordas conforme regra Silent Architect */
+    border-color: transparent; /* No-Line Rule: Boundaries through tonal shifts */
   }
   
   body {
@@ -58,58 +38,96 @@
     font-family: 'Inter', sans-serif;
     -webkit-font-smoothing: antialiased;
   }
+}
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tighter;
-    font-weight: 500;
+@layer utilities {
+  /* Tonal Hierarchy (Design System vNext) */
+  .surface-lowest { background-color: #FFFFFF; } /* Paper card */
+  .surface-low { background-color: #FFF8F0; }    /* Cream base */
+  .surface-container { background-color: #F6EDDC; } /* Recessed beige */
+  .surface-variant { background-color: #EAE2D1; }   /* Input field base */
+
+  /* Typography: Editorial Voice (Inter) - UX Senior Legibility Audit */
+  .display-sm {
+    @apply font-bold tracking-[-0.03em] leading-[1.1] text-primary;
+    font-size: 3.5rem;
   }
+
+  .title-md {
+    @apply font-bold tracking-tight text-primary;
+    font-size: 1.25rem; /* 20px - High Legibility Header */
+  }
+
+  .body-large {
+    @apply leading-relaxed text-muted-foreground;
+    font-size: 1.125rem; /* 18px - Content Values */
+  }
+
+  .body-md {
+    @apply leading-relaxed text-muted-foreground;
+    font-size: 1rem; /* 16px - Standard Reading */
+  }
+
+  .label-sm {
+    @apply font-bold uppercase tracking-[0.08em] opacity-80;
+    font-size: 0.875rem; /* 14px - Functional Minimum */
+  }
+
+  /* Interaction & Depth */
+  .glass-panel {
+    @apply backdrop-blur-[20px];
+    background-color: rgba(246, 237, 220, 0.8); /* surface-container @ 80% */
+  }
+
+  .ambient-shadow {
+    /* Sun Gold Tinted Shadow formula from DESIGN.md */
+    box-shadow: 0 12px 32px rgba(132, 83, 31, 0.08); /* Warm Ambient shadow */
+  }
+
+  .ghost-border {
+    @apply border;
+    border-color: rgba(192, 201, 195, 0.15); /* outline-variant @ 15% */
+  }
+
+  .btn-primary-atelier {
+    @apply bg-secondary text-secondary-foreground transition-all hover:opacity-90;
+    @apply rounded-[1rem] shadow-[0_8px_16px_rgba(132,83,31,0.12)];
+    @apply border-none;
+  }
+
+  /* Rulers & Handles (Terracotta Accents) */
+  .ruler-overlay {
+    @apply absolute pointer-events-none;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(132, 83, 31, 0.15),
+      rgba(132, 83, 31, 0.15) 2px,
+      rgba(132, 83, 31, 0.25) 2px,
+      rgba(132, 83, 31, 0.25) 4px
+    );
+  }
+
+  .ruler-handle {
+    @apply absolute bg-secondary transition-all duration-200 hover:scale-x-110 rounded-full;
+    box-shadow: 0 4px 12px rgba(132, 83, 31, 0.3);
+  }
+
+  /* Design System vNext: Section Gaps */
+  .vnext-section-gap { @apply mb-10; } /* 40px */
+  .vnext-element-gap { @apply space-y-3; } /* 12px */
 }
 
-/* Editorial Typography Classes */
-.display-lg {
-  @apply text-6xl font-extrabold tracking-[-0.03em];
+/* Base resets */
+body {
+  @apply bg-background text-foreground;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-.label-md {
-  @apply text-[10px] uppercase font-semibold tracking-[0.1em] text-muted-foreground;
-}
-
-/* Layering without borders */
-.surface-low {
-  @apply bg-muted rounded-[2rem] p-8 sm:p-12;
-}
-
-.surface-lowest {
-  @apply bg-card rounded-2xl shadow-[0px_12px_32px_rgba(45,52,53,0.04)];
-}
-
-/* Custom styles */
-.canvas-container {
-  @apply rounded-[1.5rem] overflow-hidden bg-card;
-  background-image: radial-gradient(rgba(45, 52, 53, 0.05) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-.ruler-overlay {
-  @apply absolute pointer-events-none;
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(86, 94, 116, 0.05),
-    rgba(86, 94, 116, 0.05) 2px,
-    rgba(86, 94, 116, 0.1) 2px,
-    rgba(86, 94, 116, 0.1) 4px
-  );
-}
-
-.ruler-handle {
-  @apply absolute bg-primary transition-all duration-200 hover:scale-x-110 rounded-full;
-  box-shadow: 0 4px 12px rgba(86, 94, 116, 0.2);
-}
-
-/* Scrollbar */
+/* Scrollbar (Organic Tone) */
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: hsl(var(--secondary)) transparent;
+  scrollbar-color: rgba(64, 73, 69, 0.1) transparent;
 }
 
 .scrollbar-thin::-webkit-scrollbar {
@@ -117,5 +135,5 @@
 }
 
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  @apply bg-secondary rounded-full;
+  @apply bg-primary/10 rounded-full hover:bg-primary/20;
 }
