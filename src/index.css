@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 180 10% 98%; /* #f9f9f9 - surface */
+    --foreground: 180 8% 19%;   /* #2d3435 - on_surface */
+    
+    --card: 0 0% 100%;             /* #ffffff - surface-container-lowest */
+    --card-foreground: 180 8% 19%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 180 8% 19%;
+    
+    --primary: 224 15% 40%;        /* #565e74 - primary */
+    --primary-foreground: 224 20% 98%; /* #f7f7ff - on_primary */
+    
+    --secondary: 184 9% 88%;       /* #dde4e5 - surface-container-highest */
+    --secondary-foreground: 180 8% 19%;
+    
+    --muted: 180 5% 95%;           /* #f2f4f4 - surface-container-low */
+    --muted-foreground: 184 4% 37%; /* #5a6061 - on_surface_variant */
+    
+    --accent: 184 9% 88%;
+    --accent-foreground: 180 8% 19%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 184 6% 69%;          /* #adb3b4 - outline-variant */
+    --input: 184 6% 69%;
+    --ring: 224 15% 40%;
+    
+    --radius: 1rem; /* lg: 16px */
+  }
+
+  .dark {
+    --background: 180 8% 10%;
+    --foreground: 180 5% 95%;
+    --card: 180 8% 12%;
+    --card-foreground: 180 5% 95%;
+    --primary: 224 15% 60%;
+    --primary-foreground: 180 8% 10%;
+    --muted: 180 5% 15%;
+    --muted-foreground: 180 5% 70%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: transparent; /* Padrão: sem bordas conforme regra Silent Architect */
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-tighter;
+    font-weight: 500;
+  }
+}
+
+/* Editorial Typography Classes */
+.display-lg {
+  @apply text-6xl font-extrabold tracking-[-0.03em];
+}
+
+.label-md {
+  @apply text-[10px] uppercase font-semibold tracking-[0.1em] text-muted-foreground;
+}
+
+/* Layering without borders */
+.surface-low {
+  @apply bg-muted rounded-[2rem] p-8 sm:p-12;
+}
+
+.surface-lowest {
+  @apply bg-card rounded-2xl shadow-[0px_12px_32px_rgba(45,52,53,0.04)];
+}
+
+/* Custom styles */
+.canvas-container {
+  @apply rounded-[1.5rem] overflow-hidden bg-card;
+  background-image: radial-gradient(rgba(45, 52, 53, 0.05) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.ruler-overlay {
+  @apply absolute pointer-events-none;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(86, 94, 116, 0.05),
+    rgba(86, 94, 116, 0.05) 2px,
+    rgba(86, 94, 116, 0.1) 2px,
+    rgba(86, 94, 116, 0.1) 4px
+  );
+}
+
+.ruler-handle {
+  @apply absolute bg-primary transition-all duration-200 hover:scale-x-110 rounded-full;
+  box-shadow: 0 4px 12px rgba(86, 94, 116, 0.2);
+}
+
+/* Scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--secondary)) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  @apply w-1.5 h-1.5;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply bg-secondary rounded-full;
+}
