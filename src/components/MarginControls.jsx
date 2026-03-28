@@ -43,29 +43,31 @@ export function MarginControls({ margins, onChange, pdfDimensions }) {
   )
 
   return (
-    <div className="space-y-8 h-full flex flex-col pt-2">
-      <div className="grid grid-cols-1 gap-4">
-        <MarginInput side="top" icon={ArrowUp} label="Topo" />
-        <MarginInput side="bottom" icon={ArrowDown} label="Base" />
-        <MarginInput side="left" icon={ArrowLeft} label="Esq." />
-        <MarginInput side="right" icon={ArrowRight} label="Dir." />
-      </div>
+    <div className="flex flex-col pt-2">
+      <div className="pb-4 space-y-4">
+        <div className="grid grid-cols-1 gap-4">
+          <MarginInput side="top" icon={ArrowUp} label="Topo" />
+          <MarginInput side="bottom" icon={ArrowDown} label="Base" />
+          <MarginInput side="left" icon={ArrowLeft} label="Esq." />
+          <MarginInput side="right" icon={ArrowRight} label="Dir." />
+        </div>
 
-      <div className="pt-4 flex justify-end">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleReset}
-          className="h-9 px-4 rounded-xl label-sm lowercase gap-2 text-primary/40 hover:text-primary hover:bg-primary/5 transition-all"
-        >
-          <RotateCcw size={14} />
-          limpar ajustes
-        </Button>
+        <div className="flex justify-end mt-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleReset}
+            className="h-9 px-4 rounded-xl label-sm lowercase gap-2 text-primary/40 hover:text-primary hover:bg-primary/5 transition-all"
+          >
+            <RotateCcw size={14} />
+            limpar ajustes
+          </Button>
+        </div>
       </div>
 
       {/* Visual Tuning Reference - Editorial Mirror */}
-      <div className="mt-auto pb-4">
-        <div className="relative w-full aspect-[4/5] max-w-[140px] mx-auto bg-muted rounded-[2rem] overflow-hidden ring-1 ring-primary/5 transition-all duration-700 shadow-inner">
+      <div className="pt-4 border-t border-primary/5 mt-4">
+        <div className="relative w-full aspect-[4/5] max-w-[140px] min-h-[160px] mx-auto bg-muted rounded-[2rem] overflow-hidden ring-1 ring-primary/5 transition-all duration-700 shadow-inner">
           <div className="absolute inset-4 border border-primary/5 rounded-2xl opacity-50" />
           
           {margins.top > 0 && (

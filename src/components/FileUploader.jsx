@@ -53,10 +53,10 @@ export function FileUploader({ onFilesSelected, multiple = true }) {
         onDragOver={(e) => { e.preventDefault(); setIsDragOver(true) }}
         onDragLeave={(e) => { e.preventDefault(); setIsDragOver(false) }}
         className={cn(
-          "relative rounded-[3rem] p-12 sm:p-20 text-center cursor-pointer transition-all duration-500 overflow-hidden group",
+          "relative rounded-[3rem] p-12 sm:p-20 text-center cursor-pointer transition-all duration-300 ease-out overflow-hidden group",
           isDragOver 
             ? "bg-primary/5 scale-[1.02] ring-2 ring-primary/20" 
-            : "bg-muted/40 hover:bg-muted/60 ring-1 ring-primary/5"
+            : "bg-muted/40 hover:bg-muted/60 ring-1 ring-primary/5 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/20 hover:ring-primary/20"
         )}
       >
         <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent pointer-events-none" />
@@ -72,12 +72,11 @@ export function FileUploader({ onFilesSelected, multiple = true }) {
 
         <div className="flex flex-col items-center relative z-10">
           <div className={cn(
-            "w-20 h-20 rounded-[2.5rem] flex items-center justify-center mb-10 transition-all duration-500 shadow-sm",
-            isDragOver ? "bg-primary text-white scale-110 rotate-6" : "bg-card text-primary/40 group-hover:text-primary group-hover:scale-105"
+            "w-20 h-20 rounded-[2.5rem] flex items-center justify-center mb-10 transition-all duration-300 shadow-sm",
+            isDragOver ? "bg-primary text-white scale-110 rotate-6" : "bg-card text-primary/40 group-hover:text-primary"
           )}>
             <Upload 
               size={32} 
-              className="transition-transform duration-500 group-hover:-translate-y-1"
             />
           </div>
           

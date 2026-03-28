@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 
-const DEFAULT_PRESETS = [
+export const DEFAULT_PRESETS = [
   {
     id: 'signature-right',
     name: 'Assinatura Digital (Direita)',

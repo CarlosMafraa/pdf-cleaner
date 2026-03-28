@@ -12,6 +12,7 @@ import {
   Check,
   Settings2
 } from 'lucide-react'
+import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Switch } from '@/components/ui/switch'
@@ -21,7 +22,7 @@ import { Separator } from '@/components/ui/separator'
 import { Rulers, CropHandles } from './Rulers'
 import { ZoomControls } from './ZoomControls'
 import { MarginControls } from './MarginControls'
-import { PresetSelector, QuickPresets } from './Presets'
+import { PresetList } from './Presets'
 import { usePresets } from '@/hooks/usePresets'
 import { cn } from '@/lib/utils'
 
@@ -38,7 +39,8 @@ export function PDFEditor({
   const [zoom, setZoom] = useState(1)
   const [showComparison, setShowComparison] = useState(false)
   const removeAnnotations = true // Sempre remover por padrão, conforme pedido do usuário
-  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [activeTab, setActiveTab] = useState('automatico')
+  const [newPresetName, setNewPresetName] = useState('')
   
   const [margins, setMargins] = useState({
     top: 0,
@@ -47,7 +49,20 @@ export function PDFEditor({
     right: 25
   })
   
-  const { presets, addPreset, deletePreset } = usePresets()
+  const { defaultPresets, customPresets, addPreset, deletePreset } = usePresets()
+
+  const handleSavePreset = () => {
+    if (newPresetName.trim()) {
+      addPreset({
+        name: newPresetName.trim(),
+        description: 'Configuração Personalizada',
+        margins: margins,
+        removeAnnotations,
+      })
+      setNewPresetName('')
+      setActiveTab('automatico')
+    }
+  }
 
   // Abre comparação automaticamente quando o PDF processado fica disponível
   useEffect(() => {
@@ -270,6 +285,51 @@ export function PDFEditor({
             onFitToScreen={handleFitToScreen}
             onFullscreen={toggleFullscreen}
           />
+          
+          <div className="flex items-center gap-2 pl-4 border-l border-primary/10">
+            {!showComparison ? (
+              <Button
+                onClick={handleProcess}
+                disabled={isProcessing}
+                className="h-10 px-6 rounded-full btn-primary-atelier font-bold shadow-none border-none shrink-0"
+              >
+                {isProcessing ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 size={16} className="animate-spin" />
+                    <span className="uppercase text-[11px] tracking-widest text-white leading-none pt-0.5">Limpando...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Eye size={16} />
+                    <span className="uppercase text-[11px] tracking-widest text-white leading-none pt-0.5">Visualizar</span>
+                  </div>
+                )}
+              </Button>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowComparison(false)}
+                  className="h-10 px-4 rounded-full text-primary font-bold hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-center gap-2 uppercase text-[11px] tracking-widest pt-0.5">
+                    <EyeOff size={16} />
+                    Voltar
+                  </div>
+                </Button>
+                
+                <Button
+                  onClick={handleDownload}
+                  className="h-10 px-6 rounded-full btn-primary-atelier font-bold shadow-none border-none"
+                >
+                  <div className="flex items-center gap-2">
+                    <Download size={16} />
+                    <span className="uppercase text-[11px] tracking-widest text-white leading-none pt-0.5">Exportar Arquivo</span>
+                  </div>
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -342,20 +402,20 @@ export function PDFEditor({
         </div>
 
         {/* Sidebar - Organic Editorial (Soft Cream) */}
-        <div className="w-full sm:w-80 bg-background flex flex-col h-full border-l border-primary/5 shadow-[-12px_0_40px_rgba(132,83,31,0.03)] relative z-40">
-          <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="w-full sm:w-80 bg-background h-full border-l border-primary/5 shadow-[-12px_0_40px_rgba(132,83,31,0.03)] relative z-40 overflow-y-auto scrollbar-thin">
+          <div className="flex flex-col min-h-full">
             {/* Functional Tabs - 8px Grid Alignment */}
-            <div className="flex px-4 py-2 bg-muted/30 m-6 rounded-2xl">
+            <div className="flex px-4 py-2 bg-muted/30 m-6 rounded-2xl shrink-0">
                {[
-                 { id: 'settings', label: 'Favoritos' },
+                 { id: 'automatico', label: 'Automático' },
                  { id: 'manual', label: 'Manual' }
                ].map((tab) => (
                  <button 
                   key={tab.id}
-                  onClick={() => setShowAdvanced(tab.id === 'manual')}
+                  onClick={() => setActiveTab(tab.id)}
                   className={cn(
                     "flex-1 label-sm lowercase pt-2.5 pb-2 transition-all rounded-xl",
-                    (showAdvanced === (tab.id === 'manual')) 
+                    (activeTab === tab.id) 
                       ? "bg-card text-primary shadow-sm" 
                       : "text-muted-foreground/50 hover:text-primary/70"
                   )}
@@ -365,26 +425,32 @@ export function PDFEditor({
                ))}
             </div>
 
-            <div className="flex-1 px-8 pb-6 overflow-hidden">
+            <div className="flex-1 px-8 pb-8 flex flex-col">
               {/* Contextual Panel - Configuração (Presets) */}
-              {!showAdvanced ? (
-                <div className="space-y-6 animate-in fade-in duration-300">
-                  <div className="flex items-center justify-between">
-                    <h3 className="title-md opacity-100">Biblioteca</h3>
-                    <PresetSelector
-                      presets={presets}
-                      currentMargins={margins}
-                      onSelectPreset={handleSelectPreset}
-                      onSavePreset={addPreset}
-                      onDeletePreset={deletePreset}
+              {activeTab === 'automatico' && (
+                <div className="animate-in fade-in duration-300">
+                  <div className="mb-6">
+                    <p className="label-sm mb-4 text-primary opacity-50 px-1 tracking-[0.2em] uppercase">Padrões do Sistema</p>
+                    <PresetList 
+                      presets={defaultPresets} 
+                      onSelect={handleSelectPreset}
                     />
                   </div>
-                  <QuickPresets presets={presets} onSelect={handleSelectPreset} />
+                  
+                  <div className="pt-6 border-t border-primary/5">
+                    <h3 className="title-md opacity-100 mb-4 px-1">Minhas Configurações</h3>
+                    <PresetList 
+                      presets={customPresets} 
+                      onSelect={handleSelectPreset}
+                      onDelete={deletePreset}
+                    />
+                  </div>
                 </div>
-              ) : (
-                /* Contextual Panel - Manual Adjustment */
-                <div className="space-y-8 animate-in fade-in duration-300 flex flex-col h-full">
-                  <div className="space-y-4">
+              )}
+
+              {activeTab === 'manual' && (
+                <div className="animate-in fade-in duration-300 flex flex-col flex-1">
+                  <div className="space-y-4 shrink-0 mb-6">
                     <div className="flex items-center justify-between">
                       <h3 className="title-md opacity-100">Ajuste Fino</h3>
                       <Badge variant="secondary" className="bg-primary text-white text-[10px] px-2 py-0 border-none rounded">PT</Badge>
@@ -407,61 +473,35 @@ export function PDFEditor({
                     </div>
                   </div>
                   
-                  <div className="flex-1 min-h-0 pt-2">
+                  <div className="flex-1 flex flex-col">
                     <MarginControls
                       margins={margins}
                       onChange={setMargins}
                       pdfDimensions={pdfInfo}
                     />
                   </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Primary Operations - Anchored Bottom */}
-          <div className="p-8 pt-0 mt-auto">
-            <div className="p-2 bg-card/40 rounded-[1.25rem] ring-1 ring-primary/5 shadow-xl glass-panel">
-              {!showComparison ? (
-                <Button
-                  onClick={handleProcess}
-                  disabled={isProcessing}
-                  className="w-full h-14 rounded-xl btn-primary-atelier font-bold tracking-tight shadow-none border-none shrink-0"
-                >
-                  {isProcessing ? (
-                    <div className="flex items-center gap-3">
-                      <Loader2 size={20} className="animate-spin" />
-                      <span className="uppercase label-sm tracking-widest text-white leading-none pt-0.5">Limpando...</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-3">
-                      <Eye size={20} />
-                      <span className="uppercase label-sm tracking-widest text-white leading-none pt-0.5">Pré-Visualização</span>
-                    </div>
-                  )}
-                </Button>
-              ) : (
-                <div className="flex flex-col gap-2">
-                  <Button
-                    variant="ghost"
-                    onClick={() => setShowComparison(false)}
-                    className="w-full h-12 rounded-xl text-primary font-bold tracking-tight hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-2 label-sm uppercase tracking-widest pt-0.5">
-                      <EyeOff size={18} />
-                      Voltar ao Ajuste
-                    </div>
-                  </Button>
                   
-                  <Button
-                    onClick={handleDownload}
-                    className="w-full h-14 rounded-xl btn-primary-atelier font-bold tracking-tight shadow-none border-none"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Download size={20} />
-                      <span className="uppercase label-sm tracking-widest text-white leading-none pt-0.5">Exportar Arquivo</span>
+                  {/* Save custom preset section */}
+                  <div className="pt-6 mt-4 border-t border-primary/5 shrink-0 space-y-3">
+                    <p className="label-sm text-primary opacity-50 px-1 tracking-[0.2em] uppercase">Salvar como Predefinição</p>
+                    <div className="flex items-center gap-2 bg-muted p-1 rounded-xl">
+                      <Input
+                        value={newPresetName}
+                        onChange={(e) => setNewPresetName(e.target.value)}
+                        placeholder="Nome da configuração..."
+                        className="h-10 text-sm flex-1 border-none bg-transparent focus-visible:ring-0"
+                        onKeyDown={(e) => e.key === 'Enter' && handleSavePreset()}
+                      />
+                      <Button
+                        variant="ghost"
+                        onClick={handleSavePreset}
+                        disabled={!newPresetName.trim()}
+                        className="h-10 px-4 text-emerald-600 hover:bg-emerald-50 rounded-lg label-sm lowercase gap-2"
+                      >
+                        <Check size={16} /> salvar
+                      </Button>
                     </div>
-                  </Button>
+                  </div>
                 </div>
               )}
             </div>
