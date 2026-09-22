@@ -1,7 +1,7 @@
-# PDF Cleaner Pro
+# PDF Cleaner
 
 ## 📋 Resumo
-O **PDF Cleaner Pro** é uma ferramenta web para limpeza de documentos PDF. Permite remover assinaturas digitais, marcas d'água e bordas indesejadas usando réguas interativas — basta arrastar as bordas diretamente sobre o documento para definir a área de corte.
+O **PDF Cleaner** é uma ferramenta web para limpeza de documentos PDF. Permite remover assinaturas digitais, marcas d'água e bordas indesejadas usando réguas interativas — basta arrastar as bordas diretamente sobre o documento para definir a área de corte.
 
 ## 🎯 O que faz
 
@@ -25,16 +25,23 @@ O **PDF Cleaner Pro** é uma ferramenta web para limpeza de documentos PDF. Perm
 
 ## 🛠️ Configuração Local
 
+Stack: Angular 22 (standalone, zoneless) + Tailwind CSS + `pdf-lib`/`pdfjs-dist`.
+
 ```bash
 # Instalar dependências
-pnpm install
+npm install
 
 # Rodar servidor de desenvolvimento
-pnpm dev
+npm start
 
 # Gerar build de produção
-pnpm build
+npm run build
+
+# Rodar os testes end-to-end (Playwright)
+npm run e2e
 ```
 
+Veja [ANGULAR_MIGRATION.md](ANGULAR_MIGRATION.md) para o histórico da migração de React para Angular, e [ROADMAP.md](ROADMAP.md) para as próximas melhorias planejadas.
+
 ---
-PDF Cleaner Pro &copy; 2026. Processamento Local e Gratuito.
+PDF Cleaner &copy; 2026. Processamento Local e Gratuito.

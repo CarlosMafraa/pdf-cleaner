@@ -1,0 +1,139 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* The Organic Editorial Palette (The Digital Atelier) */
+    --background: 34 100% 97%;      /* #FFF8F0 - Soft Cream Skin */
+    --foreground: 45 30% 10%;       /* #1F1B11 - Deep Charcoal On-Surface */
+
+    --primary: 161 100% 21%;        /* #006948 - Emerald Archive */
+    --primary-foreground: 0 0% 100%;
+    --primary-container: 161 68% 35%; /* #1B8563 - Emerald Container */
+
+    --secondary: 32 63% 32%;        /* #84531F - Terracotta Roast */
+    --secondary-foreground: 32 63% 95%; /* #FFF4EA - On Secondary */
+
+    --muted: 38 46% 91%;            /* #F6EDDC - Recessed Content (Soft Beige) */
+    --muted-foreground: 154 7% 28%;  /* #404945 - Forest Slate Body */
+
+    --accent: 15 100% 17%;          /* #5A1600 - Earth Red */
+    --accent-foreground: 15 67% 52%; /* #D65A31 - Human Accent */
+
+    --card: 0 0% 100%;              /* #FFFFFF - Paper */
+    --border: 140 6% 77%;           /* #C0C9C3 - Ghost Border base */
+
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * {
+    border-color: transparent; /* No-Line Rule: Boundaries through tonal shifts */
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+@layer utilities {
+  /* Tonal Hierarchy (Design System vNext) */
+  .surface-lowest { background-color: #FFFFFF; } /* Paper card */
+  .surface-low { background-color: #FFF8F0; }    /* Cream base */
+  .surface-container { background-color: #F6EDDC; } /* Recessed beige */
+  .surface-variant { background-color: #EAE2D1; }   /* Input field base */
+
+  /* Typography: Editorial Voice (Inter) - UX Senior Legibility Audit */
+  .display-sm {
+    @apply font-bold tracking-[-0.03em] leading-[1.1] text-primary;
+    font-size: 3.5rem;
+  }
+
+  .title-md {
+    @apply font-bold tracking-tight text-primary;
+    font-size: 1.25rem; /* 20px - High Legibility Header */
+  }
+
+  .body-large {
+    @apply leading-relaxed text-muted-foreground;
+    font-size: 1.125rem; /* 18px - Content Values */
+  }
+
+  .body-md {
+    @apply leading-relaxed text-muted-foreground;
+    font-size: 1rem; /* 16px - Standard Reading */
+  }
+
+  .label-sm {
+    @apply font-bold uppercase tracking-[0.08em] opacity-80;
+    font-size: 0.875rem; /* 14px - Functional Minimum */
+  }
+
+  /* Interaction & Depth */
+  .glass-panel {
+    @apply backdrop-blur-[20px];
+    background-color: rgba(246, 237, 220, 0.8); /* surface-container @ 80% */
+  }
+
+  .ambient-shadow {
+    /* Sun Gold Tinted Shadow formula from DESIGN.md */
+    box-shadow: 0 12px 32px rgba(132, 83, 31, 0.08); /* Warm Ambient shadow */
+  }
+
+  .ghost-border {
+    @apply border;
+    border-color: rgba(192, 201, 195, 0.15); /* outline-variant @ 15% */
+  }
+
+  .btn-primary-atelier {
+    @apply bg-secondary text-secondary-foreground transition-all hover:opacity-90;
+    @apply rounded-[1rem] shadow-[0_8px_16px_rgba(132,83,31,0.12)];
+    @apply border-none;
+  }
+
+  /* Rulers & Handles (Terracotta Accents) */
+  .ruler-overlay {
+    @apply absolute pointer-events-none;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(132, 83, 31, 0.15),
+      rgba(132, 83, 31, 0.15) 2px,
+      rgba(132, 83, 31, 0.25) 2px,
+      rgba(132, 83, 31, 0.25) 4px
+    );
+  }
+
+  .ruler-handle {
+    @apply absolute bg-secondary transition-all duration-200 hover:scale-x-110 rounded-full;
+    box-shadow: 0 4px 12px rgba(132, 83, 31, 0.3);
+  }
+
+  /* Design System vNext: Section Gaps */
+  .vnext-section-gap { @apply mb-10; } /* 40px */
+  .vnext-element-gap { @apply space-y-3; } /* 12px */
+}
+
+/* Base resets */
+body {
+  @apply bg-background text-foreground;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar (Organic Tone) */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(64, 73, 69, 0.1) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  @apply w-1.5 h-1.5;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply bg-primary/10 rounded-full hover:bg-primary/20;
+}
