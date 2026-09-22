@@ -58,11 +58,28 @@ export async function createA4PdfBytes() {
   return pdfDoc.save();
 }
 
-export async function writeFixtures() {
+// A4 deitado (841x595) — reproduz o bug relatado de PDF em modo paisagem
+// abrindo cortado, com scroll lateral.
+export async function createLandscapePdfBytes() {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([841, 595]);
+  const { width, height } = page.getSize();
+
+  page.drawText('PDF Paisagem de Teste', { x: 50, y: height - 60, size: 22, color: rgb(0, 0, 0) });
+  page.drawText('841 x 595 pt (A4 deitado)', { x: 50, y: height - 90, size: 12, color: rgb(0.3, 0.3, 0.3) });
+  page.drawText('CANTO DIREITO', { x: width - 150, y: height / 2, size: 14, color: rgb(1, 0, 0) });
+
+  return pdfDoc.save();
+}
+
+async function writeFixtures() {
   fs.writeFileSync(path.join(__dirname, 'test.pdf'), await createTestPdfBytes());
   fs.writeFileSync(path.join(__dirname, 'a4-test.pdf'), await createA4PdfBytes());
-  console.log('Fixtures de PDF geradas em e2e/fixtures/ (test.pdf, a4-test.pdf)');
+  fs.writeFileSync(path.join(__dirname, 'landscape-test.pdf'), await createLandscapePdfBytes());
+  console.log('Fixtures de PDF geradas em e2e/fixtures/ (test.pdf, a4-test.pdf, landscape-test.pdf)');
 }
+
+export { writeFixtures };
 
 // Permite rodar `node e2e/fixtures/create-test-pdf.mjs` manualmente também
 // (o Playwright já gera as fixtures sozinho via globalSetup antes dos testes).

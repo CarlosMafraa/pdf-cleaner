@@ -114,6 +114,18 @@ Resultado: a sidebar virou um painel único, sem abas — Ajuste Fino → Meus F
 
 ---
 
+## Fase 9 — Bugs de layout descobertos testando com dados reais (não só o caso vazio)
+
+Dois bugs de scroll/overflow só apareceram ao testar cenários mais realistas do que "PDF de teste pequeno, sem nada salvo":
+
+**Página inteira rolava com favoritos salvos.** O teste de "cabe na tela" original só cobria o caso sem nenhum favorito salvo. Testando com 3 favoritos (sidebar mais alta), a página inteira passou a rolar e o **header sumia do topo** — faltava `min-h-0` na cadeia de flexbox entre a raiz do app (`app.html`) e o painel principal do editor (`pdf-editor.html`); sem isso, o flex item não tinha limite pra encolher e crescia com o conteúdo em vez de deixar a sidebar rolar só por dentro dela mesma. Corrigido adicionando `min-h-0` nos dois níveis da cadeia.
+
+**PDF em modo paisagem não cabia na comparação (scroll lateral).** O zoom de "ajustar à tela" era calculado uma vez, pensando em exibir uma página só. Ao processar um PDF, a tela de comparação mostra duas páginas lado a lado — pra uma página paisagem (já larga), a soma das duas facilmente estourava a largura disponível, e nenhuma das duas ficava visível por completo. `calculateFitScale()` agora recebe o modo de comparação em conta e divide a largura disponível por dois (descontando o gap) quando as duas páginas estão sendo exibidas juntas; o zoom é recalculado tanto ao entrar quanto ao sair da comparação. Durante a correção, uma condição de corrida foi introduzida e pega pelos testes: re-renderizar o canvas processado antes do original terminava de aplicar a nova escala fazia os dois lados aparecerem com tamanhos diferentes por um instante — corrigido invertendo a ordem (original primeiro, processado depois).
+
+Testes E2E adicionados para os dois casos, incluindo uma fixture de PDF paisagem (`landscape-test.pdf`, 841x595) gerada automaticamente pelo mesmo `globalSetup`.
+
+---
+
 ## Histórico de datas
 - 2026-09-21: Auditoria inicial do projeto React; decisão de migrar para Angular; migração concluída (Fases 0-6); testes E2E adicionados.
-- 2026-09-22: Fase 7 (cores/responsividade/SOLID, primeira rodada); paleta refinada em várias iterações (ver design.md); revisão SOLID completa do repositório; documentação consolidada nesta pasta `docs/`. Fase 8: presets do sistema removidos, sidebar simplificada pra um painel único.
+- 2026-09-22: Fase 7 (cores/responsividade/SOLID, primeira rodada); paleta refinada em várias iterações (ver design.md); revisão SOLID completa do repositório; documentação consolidada nesta pasta `docs/`. Fase 8: presets do sistema removidos, sidebar simplificada pra um painel único. Fase 9: bugs de scroll de página inteira (favoritos) e de comparação em PDF paisagem corrigidos, achados testando cenários com dados reais em vez do caso vazio.

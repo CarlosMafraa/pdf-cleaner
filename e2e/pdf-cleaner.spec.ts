@@ -4,6 +4,7 @@ import fs from 'fs';
 
 const FIXTURE_PDF = path.join(__dirname, 'fixtures', 'test.pdf');
 const A4_FIXTURE_PDF = path.join(__dirname, 'fixtures', 'a4-test.pdf');
+const LANDSCAPE_FIXTURE_PDF = path.join(__dirname, 'fixtures', 'landscape-test.pdf');
 const SCREENSHOT_DIR = path.join(__dirname, '..', 'e2e-screenshots');
 
 test.beforeAll(() => {
@@ -212,4 +213,29 @@ test.describe('PDF Cleaner - fluxo completo', () => {
       expect(pageOverflow).toBeLessThanOrEqual(2);
     });
   }
+
+  test('PDF paisagem: as duas páginas da comparação cabem sem scroll lateral', async ({ page }) => {
+    // Bug relatado: com um PDF em modo paisagem, o zoom era calculado pra uma
+    // página só; ao processar, a comparação mostra DUAS páginas lado a lado e
+    // nenhuma das duas cabia por completo (precisava de scroll horizontal).
+    await page.setViewportSize({ width: 1366, height: 768 });
+    await page.goto('/');
+    await page.locator('input[type="file"]').setInputFiles(LANDSCAPE_FIXTURE_PDF);
+    await expect(page.getByText('landscape-test.pdf')).toBeVisible();
+
+    await page.getByRole('button', { name: /visualizar/i }).click();
+    await expect(page.getByText('Resultado Final')).toBeVisible({ timeout: 15_000 });
+    await page.waitForTimeout(300);
+
+    const canvasArea = page.locator('[class*="overflow-auto"][class*="bg-muted"]').first();
+    const canvasOverflow = await canvasArea.evaluate((el) => el.scrollWidth - el.clientWidth);
+    expect(canvasOverflow).toBeLessThanOrEqual(2);
+
+    // Voltar pra visão de uma página só deve caber de novo em 100%-ish da largura
+    // (o zoom recalcula pra uma página, não fica "preso" no valor de duas).
+    await page.getByRole('button', { name: /voltar/i }).click();
+    await expect(page.getByText('Resultado Final')).toHaveCount(0);
+    const singlePageOverflow = await canvasArea.evaluate((el) => el.scrollWidth - el.clientWidth);
+    expect(singlePageOverflow).toBeLessThanOrEqual(2);
+  });
 });

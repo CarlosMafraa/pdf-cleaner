@@ -114,6 +114,15 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
     if (changes['processedPdf'] && !changes['processedPdf'].firstChange) {
       if (this.processedPdf) {
         this.showComparison.set(true);
+        // A comparação mostra duas páginas lado a lado — o zoom calculado pra uma
+        // página só (ngAfterViewInit) pode não caber mais duas, especialmente em
+        // PDFs paisagem (já largos). Recalcula considerando as duas e já
+        // re-renderiza o original ANTES de carregar o processado: se fizesse na
+        // ordem inversa, "Resultado Final" apareceria (processedPdfDoc setado)
+        // enquanto o canvas original ainda estivesse na escala antiga — os dois
+        // lados da comparação ficariam com tamanhos diferentes por um instante.
+        this.zoom.set(this.calculateFitScale());
+        await this.renderOriginal();
         await this.loadProcessedDocument(this.processedPdf);
       } else {
         this.processedPdfDoc.set(null);
@@ -137,8 +146,15 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
     const horizontalPadding = window.innerWidth >= 640 ? 96 : 32; // Tailwind p-12 / p-4 (dois lados)
     const rulerSize = 24;
 
-    const availableWidth = container.clientWidth - horizontalPadding - rulerSize;
+    let availableWidth = container.clientWidth - horizontalPadding - rulerSize;
     const availableHeight = container.clientHeight - horizontalPadding - rulerSize;
+
+    // No modo de comparação, duas páginas aparecem lado a lado (gap-16 = 64px
+    // entre elas) — sem dividir a largura disponível por dois aqui, uma página
+    // paisagem (já larga) sozinha já ocupa quase tudo, e a segunda não cabe.
+    if (this.showComparison() && window.innerWidth >= 640) {
+      availableWidth = (availableWidth - 64) / 2;
+    }
 
     const scaleW = availableWidth / this.pdfInfo.width;
     const scaleH = availableHeight / this.pdfInfo.height;
@@ -198,6 +214,13 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   handleFitToScreen() {
+    this.setZoom(this.calculateFitScale());
+  }
+
+  handleHideComparison() {
+    this.showComparison.set(false);
+    // Volta a caber uma página só (sem a segunda ao lado), então o zoom de
+    // ajuste automático precisa ser recalculado de novo.
     this.setZoom(this.calculateFitScale());
   }
 
