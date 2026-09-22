@@ -142,16 +142,18 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   private calculateFitScale(): number {
-    if (!this.containerRef?.nativeElement) return 1;
-    const sidebarWidth = 320;
-    const headerHeight = 73;
-    // 640px = breakpoint "sm" do Tailwind, o mesmo usado pela sidebar (`w-full sm:w-80`)
-    // para virar painel lateral fixo. Tinha um valor diferente (768) aqui antes, o que
-    // causava zoom calculado errado (e overflow do canvas) entre 641-768px de largura.
-    const sidebarBreakpoint = 640;
+    // Mede o espaço real disponível (canvasContainerRef) em vez de usar constantes
+    // fixas para altura do header/largura da sidebar — essas constantes ficavam
+    // desatualizadas toda vez que o layout mudava e causavam overflow (scroll)
+    // mesmo quando o PDF "deveria" caber inteiro na tela.
+    const container = this.canvasContainerRef?.nativeElement;
+    if (!container) return 1;
 
-    const availableWidth = this.containerRef.nativeElement.offsetWidth - (window.innerWidth >= sidebarBreakpoint ? sidebarWidth : 0) - 64;
-    const availableHeight = window.innerHeight - headerHeight - 64;
+    const horizontalPadding = window.innerWidth >= 640 ? 96 : 32; // Tailwind p-12 / p-4 (dois lados)
+    const rulerSize = 24;
+
+    const availableWidth = container.clientWidth - horizontalPadding - rulerSize;
+    const availableHeight = container.clientHeight - horizontalPadding - rulerSize;
 
     const scaleW = availableWidth / this.pdfInfo.width;
     const scaleH = availableHeight / this.pdfInfo.height;
@@ -230,6 +232,11 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   handleSelectPreset(preset: Preset) {
     this.margins.set({ ...preset.margins });
+  }
+
+  handleManualMarginsChange(newMargins: Margins) {
+    this.margins.set(newMargins);
+    this.activeTab.set('manual');
   }
 
   handleSavePreset() {

@@ -93,10 +93,13 @@ test.describe('PDF Cleaner - fluxo completo', () => {
     expect(stats.size).toBeGreaterThan(0);
   });
 
-  test('remover margens via drag handle atualiza a régua', async ({ page }) => {
+  test('remover margens via drag handle atualiza a régua e muda para a aba Manual', async ({ page }) => {
     await page.goto('/');
     await page.locator('input[type="file"]').setInputFiles(FIXTURE_PDF);
     await expect(page.getByText('test.pdf')).toBeVisible();
+
+    // Antes de arrastar, a aba padrão é "Automático"
+    await expect(page.getByRole('button', { name: 'Automático' })).toHaveClass(/bg-card/);
 
     const rightHandle = page.locator('.ruler-handle.cursor-ew-resize').nth(1);
     const box = await rightHandle.boundingBox();
@@ -109,10 +112,28 @@ test.describe('PDF Cleaner - fluxo completo', () => {
       await page.mouse.up();
     }
 
-    await page.getByRole('button', { name: 'Manual' }).click();
+    // Arrastar a régua deve trocar a aba para "Manual" sozinho, sem precisar clicar nela
+    await expect(page.getByRole('button', { name: 'Manual' })).toHaveClass(/bg-card/);
+
     const rightMarginInput = page.locator('input[type="number"]').nth(3);
     await expect
       .poll(async () => Number(await rightMarginInput.inputValue()))
       .toBeGreaterThan(25);
+  });
+
+  test('PDF cabe na tela sem precisar de scroll no canvas nem na sidebar', async ({ page }) => {
+    await page.setViewportSize({ width: 1366, height: 768 });
+    await page.goto('/');
+    await page.locator('input[type="file"]').setInputFiles(FIXTURE_PDF);
+    await expect(page.getByText('test.pdf')).toBeVisible();
+    await page.waitForTimeout(300);
+
+    const canvasArea = page.locator('[class*="overflow-auto"][class*="bg-muted"]').first();
+    const canvasOverflow = await canvasArea.evaluate((el) => el.scrollHeight - el.clientHeight);
+    expect(canvasOverflow).toBeLessThanOrEqual(2);
+
+    const sidebar = page.locator('[class*="w-full"][class*="sm:w-80"]').first();
+    const sidebarOverflow = await sidebar.evaluate((el) => el.scrollHeight - el.clientHeight);
+    expect(sidebarOverflow).toBeLessThanOrEqual(2);
   });
 });

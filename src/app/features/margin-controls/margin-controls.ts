@@ -61,34 +61,6 @@ const FIELDS: MarginField[] = [
           </button>
         </div>
       </div>
-
-      <!-- Visual Tuning Reference - Editorial Mirror -->
-      <div class="pt-4 border-t border-primary/5 mt-4">
-        <div class="relative w-full aspect-[4/5] max-w-[140px] min-h-[160px] mx-auto bg-muted rounded-[2rem] overflow-hidden ring-1 ring-primary/5 transition-all duration-700 shadow-inner">
-          <div class="absolute inset-4 border border-primary/5 rounded-2xl opacity-50"></div>
-
-          @if (margins.top > 0) {
-            <div class="absolute top-0 left-0 right-0 bg-primary/20 backdrop-blur-sm transition-all duration-500"
-                 [style.height.%]="Math.min(margins.top / 8, 48)"></div>
-          }
-          @if (margins.bottom > 0) {
-            <div class="absolute bottom-0 left-0 right-0 bg-primary/20 backdrop-blur-sm transition-all duration-500"
-                 [style.height.%]="Math.min(margins.bottom / 8, 48)"></div>
-          }
-          @if (margins.left > 0) {
-            <div class="absolute top-0 bottom-0 left-0 bg-primary/20 backdrop-blur-sm transition-all duration-500"
-                 [style.width.%]="Math.min(margins.left / 6, 48)"></div>
-          }
-          @if (margins.right > 0) {
-            <div class="absolute top-0 bottom-0 right-0 bg-primary/20 backdrop-blur-sm transition-all duration-500"
-                 [style.width.%]="Math.min(margins.right / 6, 48)"></div>
-          }
-
-          <div class="absolute inset-0 flex items-center justify-center">
-            <span class="label-sm opacity-10 tracking-[0.4em] uppercase text-[10px] select-none">Editorial</span>
-          </div>
-        </div>
-      </div>
     </div>
   `,
 })
