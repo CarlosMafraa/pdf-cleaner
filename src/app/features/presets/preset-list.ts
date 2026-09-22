@@ -10,7 +10,7 @@ import type { Preset } from '../../core/presets.service';
     @if (presets.length === 0) {
       <div class="flex flex-col items-center justify-center p-8 text-center bg-muted/30 rounded-2xl border border-dashed border-primary/10">
         <app-icon name="bookmark" [size]="24" class="text-primary/20 mb-3" />
-        <p class="label-sm text-primary/40 uppercase tracking-widest">Nenhuma configuração salva</p>
+        <p class="label-sm text-muted-foreground uppercase tracking-widest">Nenhuma configuração salva</p>
       </div>
     } @else {
       <div class="space-y-2">
@@ -32,7 +32,7 @@ import type { Preset } from '../../core/presets.service';
               @if (onDelete) {
                 <button
                   (click)="handleDelete($event, preset.id)"
-                  class="p-2 rounded-lg text-primary/20 hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
+                  class="p-2 rounded-lg text-primary/60 hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
                 >
                   <app-icon name="trash-2" [size]="16" />
                 </button>

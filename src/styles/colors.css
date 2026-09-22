@@ -1,0 +1,46 @@
+/*
+ * ÚNICA fonte de verdade das cores do app.
+ *
+ * Para trocar a paleta inteira, mude só os valores aqui — nenhum componente,
+ * diretiva ou classe utilitária deve ter cor "chumbada" (hex/rgba fixo).
+ * Tudo consome essas variáveis via Tailwind (ver tailwind.config.js, que
+ * mapeia cada token para `hsl(var(--x))`) ou diretamente via `hsl(var(--x) / alpha)`
+ * em CSS puro (ver src/styles.css, .glass-panel/.ruler-overlay/etc.).
+ *
+ * Formato: "H S% L%" (sem a função hsl() em volta) — é o que o Tailwind
+ * espera para poder compor opacidade depois, tipo `bg-primary/40`.
+ */
+:root {
+  /* "Bound Ledger" — bordô/vinho (capa de livro encadernado) + dourado envelhecido */
+  --background: 41 69% 94%;       /* #FAF3E4 - Pergaminho */
+  --foreground: 10 33% 11%;       /* #241512 */
+
+  --primary: 339 55% 27%;         /* #6B1F3A - Vinho */
+  --primary-foreground: 0 0% 100%;
+  --primary-container: 338 52% 36%; /* #8A2C4E */
+  --on-primary-container: 341 58% 91%; /* #F5D9E2 */
+
+  --secondary: 39 71% 32%;        /* #8C6318 - Dourado Envelhecido */
+  --secondary-foreground: 0 0% 100%;
+
+  --muted: 40 55% 87%;            /* #F0E4CC */
+  --muted-foreground: 25 20% 30%; /* #5C4A3D */
+
+  --accent: 340 54% 15%;          /* #3D1220 - Vinho quase preto */
+  --accent-foreground: 346 50% 37%; /* #8C2F44 - Rosa antigo */
+
+  --card: 0 0% 100%;              /* #FFFFFF */
+  --border: 38 30% 76%;           /* #CBB999 */
+  --input: 38 30% 76%;            /* mesma família de --border */
+  --ring: 339 55% 27%;            /* = --primary, anel de foco visível */
+
+  --popover: 0 0% 100%;           /* = --card (usado pelo Tooltip) */
+  --popover-foreground: 10 33% 11%; /* = --foreground */
+
+  /* Vermelho semântico de erro — não faz parte da identidade da marca de
+     propósito (erro deve ser reconhecível independente da paleta escolhida). */
+  --destructive: 4 65% 39%;       /* #A32A22 */
+  --destructive-foreground: 0 0% 100%;
+
+  --radius: 1rem;
+}

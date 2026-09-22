@@ -1,32 +1,8 @@
+@import './styles/colors.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@layer base {
-  :root {
-    /* The Organic Editorial Palette (The Digital Atelier) */
-    --background: 34 100% 97%;      /* #FFF8F0 - Soft Cream Skin */
-    --foreground: 45 30% 10%;       /* #1F1B11 - Deep Charcoal On-Surface */
-
-    --primary: 161 100% 21%;        /* #006948 - Emerald Archive */
-    --primary-foreground: 0 0% 100%;
-    --primary-container: 161 68% 35%; /* #1B8563 - Emerald Container */
-
-    --secondary: 32 63% 32%;        /* #84531F - Terracotta Roast */
-    --secondary-foreground: 32 63% 95%; /* #FFF4EA - On Secondary */
-
-    --muted: 38 46% 91%;            /* #F6EDDC - Recessed Content (Soft Beige) */
-    --muted-foreground: 154 7% 28%;  /* #404945 - Forest Slate Body */
-
-    --accent: 15 100% 17%;          /* #5A1600 - Earth Red */
-    --accent-foreground: 15 67% 52%; /* #D65A31 - Human Accent */
-
-    --card: 0 0% 100%;              /* #FFFFFF - Paper */
-    --border: 140 6% 77%;           /* #C0C9C3 - Ghost Border base */
-
-    --radius: 1rem;
-  }
-}
 
 @layer base {
   * {
@@ -69,47 +45,53 @@
   }
 
   .label-sm {
-    @apply font-bold uppercase tracking-[0.08em] opacity-80;
+    /* Sem opacity aqui de propósito: um `opacity-80` global multiplicava com
+       qualquer text-primary/NN usado junto, derrubando o contraste bem abaixo
+       de WCAG AA (ex.: text-primary/40 + opacity-80 = ~32% de alpha real).
+       A cor de cada label é escolhida por instância (ver docs/design.md). */
+    @apply font-bold uppercase tracking-[0.08em];
     font-size: 0.875rem; /* 14px - Functional Minimum */
   }
 
-  /* Interaction & Depth */
+  /* Interaction & Depth
+     Usam hsl(var(--x) / alpha) em vez de rgba() fixo para acompanhar a paleta
+     ativa automaticamente — antes eram cores de matiz terracota "chumbadas"
+     que continuavam aparecendo mesmo depois de trocar a paleta inteira. */
   .glass-panel {
     @apply backdrop-blur-[20px];
-    background-color: rgba(246, 237, 220, 0.8); /* surface-container @ 80% */
+    background-color: hsl(var(--muted) / 0.8);
   }
 
   .ambient-shadow {
-    /* Sun Gold Tinted Shadow formula from DESIGN.md */
-    box-shadow: 0 12px 32px rgba(132, 83, 31, 0.08); /* Warm Ambient shadow */
+    box-shadow: 0 12px 32px hsl(var(--secondary) / 0.08);
   }
 
   .ghost-border {
     @apply border;
-    border-color: rgba(192, 201, 195, 0.15); /* outline-variant @ 15% */
+    border-color: hsl(var(--border) / 0.15);
   }
 
   .btn-primary-atelier {
     @apply bg-secondary text-secondary-foreground transition-all hover:opacity-90;
-    @apply rounded-[1rem] shadow-[0_8px_16px_rgba(132,83,31,0.12)];
-    @apply border-none;
+    @apply rounded-[1rem] border-none;
+    box-shadow: 0 8px 16px hsl(var(--secondary) / 0.12);
   }
 
-  /* Rulers & Handles (Terracotta Accents) */
+  /* Rulers & Handles (tingidos com a cor secondary da paleta ativa) */
   .ruler-overlay {
     @apply absolute pointer-events-none;
     background: repeating-linear-gradient(
       45deg,
-      rgba(132, 83, 31, 0.15),
-      rgba(132, 83, 31, 0.15) 2px,
-      rgba(132, 83, 31, 0.25) 2px,
-      rgba(132, 83, 31, 0.25) 4px
+      hsl(var(--secondary) / 0.15),
+      hsl(var(--secondary) / 0.15) 2px,
+      hsl(var(--secondary) / 0.25) 2px,
+      hsl(var(--secondary) / 0.25) 4px
     );
   }
 
   .ruler-handle {
     @apply absolute bg-secondary transition-all duration-200 hover:scale-x-110 rounded-full;
-    box-shadow: 0 4px 12px rgba(132, 83, 31, 0.3);
+    box-shadow: 0 4px 12px hsl(var(--secondary) / 0.3);
   }
 
   /* Design System vNext: Section Gaps */
@@ -124,10 +106,10 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Scrollbar (Organic Tone) */
+/* Scrollbar */
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: rgba(64, 73, 69, 0.1) transparent;
+  scrollbar-color: hsl(var(--muted-foreground) / 0.1) transparent;
 }
 
 .scrollbar-thin::-webkit-scrollbar {

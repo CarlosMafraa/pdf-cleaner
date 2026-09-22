@@ -41,7 +41,7 @@ npm run build
 npm run e2e
 ```
 
-Veja [ANGULAR_MIGRATION.md](ANGULAR_MIGRATION.md) para o histórico da migração de React para Angular, e [ROADMAP.md](ROADMAP.md) para as próximas melhorias planejadas.
+Veja [docs/design.md](docs/design.md) para o sistema de design (cores, tipografia, componentes) e [docs/project-history.md](docs/project-history.md) para o histórico da migração de React para Angular, o roadmap pendente e o pipeline de CI/CD.
 
 ---
 PDF Cleaner &copy; 2026. Processamento Local e Gratuito.

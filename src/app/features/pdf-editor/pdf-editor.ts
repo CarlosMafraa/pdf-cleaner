@@ -15,18 +15,19 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import * as pdfjsLib from 'pdfjs-dist';
-import type { PDFDocumentProxy, RenderTask } from 'pdfjs-dist';
 
 import { IconComponent } from '../../ui/icon/icon';
 import { ButtonDirective } from '../../ui/button/button';
 import { BadgeDirective } from '../../ui/badge/badge';
 import { InputDirective } from '../../ui/input/input';
-import { RulersComponent, CropHandlesComponent } from '../rulers/rulers';
+import { RulersComponent } from '../rulers/rulers';
+import { CropHandlesComponent } from '../rulers/crop-handles';
 import { ZoomControlsComponent } from '../zoom-controls/zoom-controls';
 import { MarginControlsComponent } from '../margin-controls/margin-controls';
 import { PresetListComponent } from '../presets/preset-list';
 import { PresetsService, type Margins, type Preset } from '../../core/presets.service';
+import { PdfDocumentService, type PdfDocument, type PdfRenderTask } from '../../core/pdf-document.service';
+import { downloadBlob } from '../../lib/utils';
 
 export interface PdfInfo {
   totalPages: number;
@@ -68,6 +69,7 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('processedCanvasRef') processedCanvasRef?: ElementRef<HTMLCanvasElement>;
 
   readonly presetsService = inject(PresetsService);
+  private readonly pdfDocument = inject(PdfDocumentService);
   private readonly injector = inject(Injector);
   readonly Math = Math;
 
@@ -83,13 +85,14 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
   readonly showComparison = signal(false);
   readonly activeTab = signal<'automatico' | 'manual'>('automatico');
   readonly margins = signal<Margins>({ top: 0, bottom: 0, left: 0, right: 25 });
-  readonly processedPdfDoc = signal<PDFDocumentProxy | null>(null);
+  readonly processedPdfDoc = signal<PdfDocument | null>(null);
 
   readonly removeAnnotations = true;
   newPresetName = '';
 
-  private pdf: PDFDocumentProxy | null = null;
-  private renderTask: RenderTask | null = null;
+  private pdf: PdfDocument | null = null;
+  private renderTask: PdfRenderTask | null = null;
+  private processedRenderTask: PdfRenderTask | null = null;
 
   defaultPresets() {
     return this.presetsService.defaultPresets();
@@ -114,14 +117,19 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   async ngAfterViewInit() {
     this.zoom.set(this.calculateFitScale());
-    await this.loadDocument();
+    try {
+      this.pdf = await this.pdfDocument.load(this.pdfBytes);
+      await this.renderOriginal();
+    } catch (e) {
+      console.error('Erro ao carregar documento:', e);
+    }
   }
 
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['processedPdf'] && !changes['processedPdf'].firstChange) {
       if (this.processedPdf) {
         this.showComparison.set(true);
-        await this.loadProcessedDocument();
+        await this.loadProcessedDocument(this.processedPdf);
       } else {
         this.processedPdfDoc.set(null);
       }
@@ -130,14 +138,19 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   ngOnDestroy() {
     this.renderTask?.cancel();
+    this.processedRenderTask?.cancel();
   }
 
   private calculateFitScale(): number {
     if (!this.containerRef?.nativeElement) return 1;
     const sidebarWidth = 320;
     const headerHeight = 73;
+    // 640px = breakpoint "sm" do Tailwind, o mesmo usado pela sidebar (`w-full sm:w-80`)
+    // para virar painel lateral fixo. Tinha um valor diferente (768) aqui antes, o que
+    // causava zoom calculado errado (e overflow do canvas) entre 641-768px de largura.
+    const sidebarBreakpoint = 640;
 
-    const availableWidth = this.containerRef.nativeElement.offsetWidth - (window.innerWidth > 768 ? sidebarWidth : 0) - 64;
+    const availableWidth = this.containerRef.nativeElement.offsetWidth - (window.innerWidth >= sidebarBreakpoint ? sidebarWidth : 0) - 64;
     const availableHeight = window.innerHeight - headerHeight - 64;
 
     const scaleW = availableWidth / this.pdfInfo.width;
@@ -146,76 +159,44 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
     return Math.min(scaleW, scaleH, 1.5);
   }
 
-  private async loadDocument() {
+  private async loadProcessedDocument(processedPdf: Uint8Array) {
     try {
-      const loadingTask = pdfjsLib.getDocument({ data: this.pdfBytes.slice(0) });
-      this.pdf = await loadingTask.promise;
-      await this.renderPage(this.pdf, this.canvasRef.nativeElement, this.currentPage(), this.zoom());
-    } catch (e) {
-      console.error('Erro ao carregar documento:', e);
-    }
-  }
-
-  private async loadProcessedDocument() {
-    if (!this.processedPdf) return;
-    try {
-      const loadingTask = pdfjsLib.getDocument({ data: this.processedPdf.slice(0) });
-      const doc = await loadingTask.promise;
+      const doc = await this.pdfDocument.load(processedPdf);
       this.processedPdfDoc.set(doc);
       // O <canvas> só existe no DOM depois que o Angular processar o novo valor do
-      // signal (o *ngIf/@if do template precisa rodar uma change detection primeiro).
-      afterNextRender(
-        () => {
-          if (this.processedCanvasRef) {
-            this.renderPage(doc, this.processedCanvasRef.nativeElement, this.currentPage(), this.zoom());
-          }
-        },
-        { injector: this.injector }
-      );
+      // signal (o @if do template precisa rodar uma change detection primeiro).
+      afterNextRender(() => this.renderProcessed(doc), { injector: this.injector });
     } catch (e) {
       console.error('Erro ao carregar PDF processado:', e);
     }
   }
 
-  private async renderPage(pdfDoc: PDFDocumentProxy, canvas: HTMLCanvasElement, pageNum: number, scale: number) {
-    if (!canvas || !pdfDoc) return;
+  private async renderOriginal() {
+    if (!this.pdf) return;
+    this.renderTask = await this.pdfDocument.renderPage(
+      this.pdf,
+      this.canvasRef.nativeElement,
+      this.currentPage(),
+      this.zoom(),
+      this.renderTask
+    );
+  }
 
-    try {
-      if (this.renderTask) {
-        try {
-          this.renderTask.cancel();
-          await this.renderTask.promise;
-        } catch {
-          // Ignora erro de cancelamento
-        }
-      }
-
-      const page = await pdfDoc.getPage(pageNum);
-      const viewport = page.getViewport({ scale });
-
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-
-      const ctx = canvas.getContext('2d')!;
-      const task = page.render({ canvasContext: ctx, viewport, canvas } as any);
-      this.renderTask = task;
-
-      await task.promise;
-      this.renderTask = null;
-    } catch (e) {
-      if ((e as Error).name !== 'RenderingCancelledException') {
-        console.error('Erro ao renderizar:', e);
-      }
-    }
+  private async renderProcessed(doc: PdfDocument = this.processedPdfDoc()!) {
+    if (!doc || !this.processedCanvasRef) return;
+    this.processedRenderTask = await this.pdfDocument.renderPage(
+      doc,
+      this.processedCanvasRef.nativeElement,
+      this.currentPage(),
+      this.zoom(),
+      this.processedRenderTask
+    );
   }
 
   private async rerenderAll() {
-    if (this.pdf) {
-      await this.renderPage(this.pdf, this.canvasRef.nativeElement, this.currentPage(), this.zoom());
-    }
-    const processedDoc = this.processedPdfDoc();
-    if (processedDoc && this.showComparison() && this.processedCanvasRef) {
-      await this.renderPage(processedDoc, this.processedCanvasRef.nativeElement, this.currentPage(), this.zoom());
+    await this.renderOriginal();
+    if (this.showComparison() && this.processedPdfDoc()) {
+      await this.renderProcessed();
     }
   }
 
@@ -266,12 +247,6 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   handleDownload() {
     if (!this.processedPdf) return;
-    const blob = new Blob([this.processedPdf as BlobPart], { type: 'application/pdf' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = this.file.name.replace('.pdf', '_limpo.pdf');
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadBlob(this.processedPdf, this.file.name.replace('.pdf', '_limpo.pdf'), 'application/pdf');
   }
 }

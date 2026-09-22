@@ -13,17 +13,37 @@ export interface ProcessResult {
   usedFallback: boolean;
 }
 
+interface ProcessingStrategy {
+  name: string;
+  /** Se true, a UI avisa o usuário que o texto do PDF deixou de ser selecionável. */
+  usesFallback: boolean;
+  run(pdfBytes: Uint8Array, options: ProcessOptions): Promise<Uint8Array>;
+}
+
 @Injectable({ providedIn: 'root' })
 export class PdfProcessingService {
+  // Tentadas em ordem — a primeira que não lançar erro vence. Adicionar uma
+  // nova estratégia de processamento é só incluir mais um item aqui, sem
+  // mexer em process().
+  private readonly strategies: ProcessingStrategy[] = [
+    { name: 'pdf-lib', usesFallback: false, run: (bytes, opts) => this.processWithPdfLib(bytes, opts) },
+    { name: 'raster-fallback', usesFallback: true, run: (bytes, opts) => this.processWithRasterFallback(bytes, opts) },
+  ];
+
   async process(pdfBytes: Uint8Array, options: ProcessOptions): Promise<ProcessResult> {
-    try {
-      const bytes = await this.processWithPdfLib(pdfBytes, options);
-      return { bytes, usedFallback: false };
-    } catch (pdfLibErr) {
-      console.warn('pdf-lib falhou, usando fallback por imagem:', (pdfLibErr as Error).message);
-      const bytes = await this.processWithRasterFallback(pdfBytes, options);
-      return { bytes, usedFallback: true };
+    let lastError: unknown;
+
+    for (const strategy of this.strategies) {
+      try {
+        const bytes = await strategy.run(pdfBytes, options);
+        return { bytes, usedFallback: strategy.usesFallback };
+      } catch (err) {
+        lastError = err;
+        console.warn(`Estratégia de processamento "${strategy.name}" falhou:`, (err as Error).message);
+      }
     }
+
+    throw lastError;
   }
 
   private async processWithPdfLib(pdfBytes: Uint8Array, options: ProcessOptions): Promise<Uint8Array> {

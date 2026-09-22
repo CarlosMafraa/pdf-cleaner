@@ -1,9 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
-import * as pdfjsLib from 'pdfjs-dist';
 
 import { IconComponent, type IconName } from './ui/icon/icon';
-import { FileUploaderComponent, FileListComponent } from './features/file-uploader/file-uploader';
+import { FileUploaderComponent } from './features/file-uploader/file-uploader';
+import { FileListComponent } from './features/file-uploader/file-list';
 import { PdfEditorComponent, type PdfInfo } from './features/pdf-editor/pdf-editor';
+import { PdfDocumentService } from './core/pdf-document.service';
 import { PdfProcessingService, type ProcessOptions } from './core/pdf-processing.service';
 
 interface Feature {
@@ -19,6 +20,7 @@ interface Feature {
   templateUrl: './app.html',
 })
 export class App {
+  private readonly pdfDocument = inject(PdfDocumentService);
   private readonly pdfProcessing = inject(PdfProcessingService);
 
   readonly features: Feature[] = [
@@ -47,18 +49,10 @@ export class App {
   private async loadPDF(file: File) {
     const arrayBuffer = await file.arrayBuffer();
     const bytes = new Uint8Array(arrayBuffer);
-
-    const loadingTask = pdfjsLib.getDocument({ data: bytes.slice(0) });
-    const pdf = await loadingTask.promise;
-    const page = await pdf.getPage(1);
-    const viewport = page.getViewport({ scale: 1 });
+    const info = await this.pdfDocument.getFirstPageInfo(bytes);
 
     this.pdfBytes.set(bytes);
-    this.pdfInfo.set({
-      totalPages: pdf.numPages,
-      width: viewport.width,
-      height: viewport.height,
-    });
+    this.pdfInfo.set(info);
     this.processedPdf.set(null);
     this.view.set('editor');
   }

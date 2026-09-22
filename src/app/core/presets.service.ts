@@ -1,4 +1,5 @@
-import { Injectable, computed, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
+import { PresetsStorageService } from './presets-storage.service';
 
 export interface Margins {
   top: number;
@@ -51,36 +52,15 @@ export const DEFAULT_PRESETS: Preset[] = [
   },
 ];
 
-const STORAGE_KEY = 'pdf-cleaner-presets';
-
 @Injectable({ providedIn: 'root' })
 export class PresetsService {
-  private readonly _presets = signal<Preset[]>(DEFAULT_PRESETS);
+  private readonly storage = inject(PresetsStorageService);
+
+  private readonly _presets = signal<Preset[]>([...DEFAULT_PRESETS, ...this.storage.load()]);
 
   readonly presets = this._presets.asReadonly();
   readonly defaultPresets = computed(() => this._presets().filter((p) => p.isDefault));
   readonly customPresets = computed(() => this._presets().filter((p) => !p.isDefault));
-
-  constructor() {
-    this.loadFromStorage();
-  }
-
-  private loadFromStorage() {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const customPresets: Preset[] = JSON.parse(stored);
-        this._presets.set([...DEFAULT_PRESETS, ...customPresets]);
-      }
-    } catch {
-      this._presets.set(DEFAULT_PRESETS);
-    }
-  }
-
-  private persist(all: Preset[]) {
-    const customPresets = all.filter((p) => !p.isDefault);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(customPresets));
-  }
 
   addPreset(preset: Omit<Preset, 'id' | 'isDefault'>): Preset {
     const newPreset: Preset = {
@@ -90,13 +70,13 @@ export class PresetsService {
     };
     const updated = [...this._presets(), newPreset];
     this._presets.set(updated);
-    this.persist(updated);
+    this.storage.save(updated.filter((p) => !p.isDefault));
     return newPreset;
   }
 
   deletePreset(id: string) {
     const updated = this._presets().filter((p) => p.id !== id || p.isDefault);
     this._presets.set(updated);
-    this.persist(updated);
+    this.storage.save(updated.filter((p) => !p.isDefault));
   }
 }

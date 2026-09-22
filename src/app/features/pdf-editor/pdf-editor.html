@@ -1,6 +1,6 @@
 <div class="h-full flex flex-col bg-background" #containerRef>
   <!-- Header - Editorial Atelier -->
-  <div class="flex items-center justify-between px-6 sm:px-12 py-4 bg-muted/40 backdrop-blur-md">
+  <div class="flex flex-wrap items-center justify-between gap-y-3 px-6 sm:px-12 py-4 glass-panel">
     <div class="flex items-center gap-6">
       <button
         appButton
@@ -13,19 +13,19 @@
       </button>
 
       <div class="hidden sm:block">
-        <p class="label-sm mb-0.5 text-primary/60">Atelier de Edição</p>
+        <p class="label-sm mb-0.5 text-muted-foreground">Atelier de Edição</p>
         <div class="flex items-baseline gap-4">
           <h2 class="title-md truncate max-w-sm">
             {{ file.name }}
           </h2>
-          <p class="label-sm font-mono opacity-40">
+          <p class="label-sm font-mono text-muted-foreground">
             {{ pdfInfo.totalPages }} PÁG &bull; {{ Math.round(pdfInfo.width) }}&times;{{ Math.round(pdfInfo.height) }}
           </p>
         </div>
       </div>
     </div>
 
-    <div class="flex items-center gap-6">
+    <div class="flex flex-wrap items-center justify-end gap-3 sm:gap-6">
       @if (pdfInfo.totalPages > 1) {
         <div class="flex items-center gap-2 bg-muted rounded-full p-1 px-3">
           <button
@@ -108,15 +108,15 @@
   </div>
 
   <!-- Main content -->
-  <div class="flex-1 flex flex-col sm:flex-row overflow-hidden relative">
+  <div class="flex-1 flex flex-col sm:flex-row overflow-y-auto sm:overflow-hidden relative">
     <!-- Canvas area (Recessed) -->
-    <div class="flex-1 overflow-auto bg-muted/20 p-4 sm:p-12 scrollbar-thin" #canvasContainerRef>
+    <div class="flex-1 min-h-[60vh] sm:min-h-0 overflow-auto bg-muted/20 p-4 sm:p-12 scrollbar-thin" #canvasContainerRef>
       <div class="flex flex-col items-center min-h-full justify-center">
         <div class="flex flex-col sm:flex-row gap-16 items-start justify-center">
           <!-- Original -->
           <div class="flex flex-col items-center">
             @if (showComparison()) {
-              <p class="label-sm mb-6 text-primary/40 uppercase tracking-[0.2em]">Referência Original</p>
+              <p class="label-sm mb-6 text-muted-foreground uppercase tracking-[0.2em]">Referência Original</p>
             }
 
             <div class="relative">
@@ -172,7 +172,7 @@
     </div>
 
     <!-- Sidebar - Organic Editorial (Soft Cream) -->
-    <div class="w-full sm:w-80 bg-background h-full border-l border-primary/5 shadow-[-12px_0_40px_rgba(132,83,31,0.03)] relative z-40 overflow-y-auto scrollbar-thin">
+    <div class="w-full sm:w-80 bg-background sm:h-full border-l border-primary/5 shadow-[-12px_0_40px_hsl(var(--secondary)/0.03)] relative z-40 sm:overflow-y-auto scrollbar-thin">
       <div class="flex flex-col min-h-full">
         <!-- Functional Tabs -->
         <div class="flex px-4 py-2 bg-muted/30 m-6 rounded-2xl shrink-0">
@@ -191,12 +191,12 @@
           @if (activeTab() === 'automatico') {
             <div class="animate-in fade-in duration-300">
               <div class="mb-6">
-                <p class="label-sm mb-4 text-primary opacity-50 px-1 tracking-[0.2em] uppercase">Padrões do Sistema</p>
+                <p class="label-sm mb-4 text-primary px-1 tracking-[0.2em] uppercase">Padrões do Sistema</p>
                 <app-preset-list [presets]="defaultPresets()" (select)="handleSelectPreset($event)" />
               </div>
 
               <div class="pt-6 border-t border-primary/5">
-                <h3 class="title-md opacity-100 mb-4 px-1">Minhas Configurações</h3>
+                <h3 class="title-md mb-4 px-1">Minhas Configurações</h3>
                 <app-preset-list
                   [presets]="customPresets()"
                   [onDelete]="true"
@@ -212,19 +212,19 @@
             <div class="animate-in fade-in duration-300 flex flex-col flex-1">
               <div class="space-y-4 shrink-0 mb-6">
                 <div class="flex items-center justify-between">
-                  <h3 class="title-md opacity-100">Ajuste Fino</h3>
-                  <span appBadge variant="secondary" class="bg-primary text-white text-[10px] px-2 py-0 border-none rounded">PT</span>
+                  <h3 class="title-md">Ajuste Fino</h3>
+                  <span appBadge class="bg-primary-container text-on-primary-container text-[10px] px-2 py-0 border-none rounded-full">PT</span>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                   <div class="bg-muted p-4 rounded-2xl">
-                    <p class="label-sm text-[10px] opacity-40 mb-1">Eixo Vertical</p>
+                    <p class="label-sm text-[10px] text-muted-foreground mb-1">Eixo Vertical</p>
                     <p class="text-xl font-bold font-mono text-primary leading-none">
                       {{ Math.round(margins().top) }}<span class="opacity-20 mx-1">/</span>{{ Math.round(margins().bottom) }}
                     </p>
                   </div>
                   <div class="bg-muted p-4 rounded-2xl">
-                    <p class="label-sm text-[10px] opacity-40 mb-1">Eixo Horiz</p>
+                    <p class="label-sm text-[10px] text-muted-foreground mb-1">Eixo Horiz</p>
                     <p class="text-xl font-bold font-mono text-primary leading-none">
                       {{ Math.round(margins().left) }}<span class="opacity-20 mx-1">/</span>{{ Math.round(margins().right) }}
                     </p>
@@ -238,7 +238,7 @@
 
               <!-- Save custom preset section -->
               <div class="pt-6 mt-4 border-t border-primary/5 shrink-0 space-y-3">
-                <p class="label-sm text-primary opacity-50 px-1 tracking-[0.2em] uppercase">Salvar como Predefinição</p>
+                <p class="label-sm text-primary px-1 tracking-[0.2em] uppercase">Salvar como Predefinição</p>
                 <div class="flex items-center gap-2 bg-muted p-1 rounded-xl">
                   <input
                     appInput
@@ -252,7 +252,7 @@
                     variant="ghost"
                     (click)="handleSavePreset()"
                     [disabled]="!newPresetName.trim()"
-                    class="h-10 px-4 text-emerald-600 hover:bg-emerald-50 rounded-lg label-sm lowercase gap-2"
+                    class="h-10 px-4 text-secondary hover:bg-secondary/10 rounded-lg label-sm lowercase gap-2"
                   >
                     <app-icon name="check" [size]="16" /> salvar
                   </button>

@@ -29,7 +29,7 @@ const FIELDS: MarginField[] = [
             <div class="flex items-center gap-4">
               <div class="flex items-center gap-3 min-w-[80px]">
                 <app-icon [name]="field.icon" [size]="16" class="text-primary/40" />
-                <span class="label-sm text-primary/60 uppercase pt-0.5">{{ field.label }}</span>
+                <span class="label-sm text-muted-foreground uppercase pt-0.5">{{ field.label }}</span>
               </div>
               <div class="relative flex-1">
                 <input
@@ -40,7 +40,7 @@ const FIELDS: MarginField[] = [
                   (input)="handleChange(field.side, $any($event.target).value)"
                   class="h-12 text-base pr-10 font-mono bg-muted border-none rounded-2xl focus-visible:ring-1 focus-visible:ring-primary/10 transition-shadow"
                 />
-                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-primary/20 uppercase tracking-widest pointer-events-none">
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest pointer-events-none">
                   PT
                 </span>
               </div>
@@ -54,7 +54,7 @@ const FIELDS: MarginField[] = [
             variant="ghost"
             size="sm"
             (click)="handleReset()"
-            class="h-9 px-4 rounded-xl label-sm lowercase gap-2 text-primary/40 hover:text-primary hover:bg-primary/5 transition-all"
+            class="h-9 px-4 rounded-xl label-sm lowercase gap-2 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-all"
           >
             <app-icon name="rotate-ccw" [size]="14" />
             limpar ajustes
