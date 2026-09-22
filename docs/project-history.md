@@ -102,6 +102,18 @@ Rebuild + os 4 testes E2E do Playwright revalidados após cada mudança, incluin
 
 ---
 
+## Fase 8 — Remoção dos presets do sistema, sidebar em painel único
+
+A sidebar do editor tinha duas abas: "Automático" (4 presets prontos do sistema + presets salvos pelo usuário) e "Manual" (ajuste fino + salvar preset). Essa organização foi revista em duas etapas:
+
+**Etapa 1** — perceber que favoritos (dado do usuário, salvo em cache) e presets do sistema (dado fixo do app) não deveriam morar na mesma aba: renomeou-se para "Manual" (ajuste fino + Meus Favoritos, virou a aba padrão) e "Modelos" (só os 4 prontos, papel de atalho pra quem nunca usou o app).
+
+**Etapa 2 — os 4 modelos prontos foram removidos por completo.** Motivo: os números desses presets (ex. margem direita de 25pt pra "assinatura", 40pt de topo pra "cabeçalho") eram valores de exemplo escolhidos sem embasamento em documentos reais — cada scanner, cada posição de assinatura e cada tipo de documento (um "Reservista" digitalizado é radicalmente diferente de um PDF gerado digitalmente, por exemplo) precisa de margens diferentes. Um preset genérico correto pra todo mundo não existe; na prática ele só teria valor como "exemplo de como usar a régua", o que não compensa manter 4 presets fixos, mais uma aba, mais a decisão de design de onde cada coisa mora.
+
+Resultado: a sidebar virou um painel único, sem abas — Ajuste Fino → Meus Favoritos (só aparece se houver algum salvo) → Salvar como Favorito. `PresetsService` não tem mais o conceito de preset "padrão"/"customizado" (o campo `isDefault` foi removido do modelo `Preset`) — todo preset agora é, por definição, algo que o próprio usuário criou e salvou.
+
+---
+
 ## Histórico de datas
 - 2026-09-21: Auditoria inicial do projeto React; decisão de migrar para Angular; migração concluída (Fases 0-6); testes E2E adicionados.
-- 2026-09-22: Fase 7 (cores/responsividade/SOLID, primeira rodada); paleta refinada em várias iterações (ver design.md); revisão SOLID completa do repositório; documentação consolidada nesta pasta `docs/`.
+- 2026-09-22: Fase 7 (cores/responsividade/SOLID, primeira rodada); paleta refinada em várias iterações (ver design.md); revisão SOLID completa do repositório; documentação consolidada nesta pasta `docs/`. Fase 8: presets do sistema removidos, sidebar simplificada pra um painel único.

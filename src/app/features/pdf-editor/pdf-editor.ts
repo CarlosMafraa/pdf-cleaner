@@ -73,17 +73,11 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
   private readonly injector = inject(Injector);
   readonly Math = Math;
 
-  readonly tabs = [
-    { id: 'automatico', label: 'Automático' },
-    { id: 'manual', label: 'Manual' },
-  ] as const;
-
   // Estado reativo via signals: app zoneless (Angular 22 sem zone.js) — mutações
   // feitas depois de um `await` só disparam re-render se forem signals.
   readonly currentPage = signal(1);
   readonly zoom = signal(1);
   readonly showComparison = signal(false);
-  readonly activeTab = signal<'automatico' | 'manual'>('automatico');
   readonly margins = signal<Margins>({ top: 0, bottom: 0, left: 0, right: 25 });
   readonly processedPdfDoc = signal<PdfDocument | null>(null);
 
@@ -94,12 +88,8 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
   private renderTask: PdfRenderTask | null = null;
   private processedRenderTask: PdfRenderTask | null = null;
 
-  defaultPresets() {
-    return this.presetsService.defaultPresets();
-  }
-
-  customPresets() {
-    return this.presetsService.customPresets();
+  favorites() {
+    return this.presetsService.presets();
   }
 
   scaledWidth() {
@@ -108,11 +98,6 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   scaledHeight() {
     return this.pdfInfo.height * this.zoom();
-  }
-
-  tabClass(id: string) {
-    const base = 'flex-1 label-sm lowercase pt-2.5 pb-2 transition-all rounded-xl';
-    return this.activeTab() === id ? `${base} bg-card text-primary shadow-sm` : `${base} text-muted-foreground/50 hover:text-primary/70`;
   }
 
   async ngAfterViewInit() {
@@ -234,11 +219,6 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.margins.set({ ...preset.margins });
   }
 
-  handleManualMarginsChange(newMargins: Margins) {
-    this.margins.set(newMargins);
-    this.activeTab.set('manual');
-  }
-
   handleSavePreset() {
     if (this.newPresetName.trim()) {
       this.presetsService.addPreset({
@@ -248,7 +228,6 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
         removeAnnotations: this.removeAnnotations,
       });
       this.newPresetName = '';
-      this.activeTab.set('automatico');
     }
   }
 

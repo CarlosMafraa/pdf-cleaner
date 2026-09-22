@@ -108,7 +108,7 @@
   </div>
 
   <!-- Main content -->
-  <div class="flex-1 flex flex-col sm:flex-row overflow-y-auto sm:overflow-hidden relative">
+  <div class="flex-1 min-h-0 flex flex-col sm:flex-row overflow-y-auto sm:overflow-hidden relative">
     <!-- Canvas area (Recessed) -->
     <div class="flex-1 min-h-[60vh] sm:min-h-0 overflow-auto bg-muted/20 p-4 sm:p-12 scrollbar-thin" #canvasContainerRef>
       <div class="flex flex-col items-center min-h-full justify-center">
@@ -136,7 +136,7 @@
                     [height]="pdfInfo.height"
                     [scale]="zoom()"
                     [margins]="margins()"
-                    (marginsChange)="handleManualMarginsChange($event)"
+                    (marginsChange)="margins.set($event)"
                   />
                 }
               </div>
@@ -174,92 +174,65 @@
     <!-- Sidebar - Organic Editorial (Soft Cream) -->
     <div class="w-full sm:w-80 bg-background sm:h-full border-l border-primary/5 shadow-[-12px_0_40px_hsl(var(--secondary)/0.03)] relative z-40 sm:overflow-y-auto scrollbar-thin">
       <div class="flex flex-col min-h-full">
-        <!-- Functional Tabs -->
-        <div class="flex px-4 py-2 bg-muted/30 m-6 rounded-2xl shrink-0">
-          @for (tab of tabs; track tab.id) {
-            <button
-              (click)="activeTab.set(tab.id)"
-              [class]="tabClass(tab.id)"
-            >
-              {{ tab.label }}
-            </button>
-          }
-        </div>
+        <div class="flex-1 px-8 py-8 flex flex-col">
+          <div class="space-y-4 shrink-0 mb-6">
+            <div class="flex items-center justify-between">
+              <h3 class="title-md">Ajuste Fino</h3>
+              <span appBadge class="bg-primary-container text-on-primary-container text-[10px] px-2 py-0 border-none rounded-full">PT</span>
+            </div>
 
-        <div class="flex-1 px-8 pb-8 flex flex-col">
-          <!-- Automático -->
-          @if (activeTab() === 'automatico') {
-            <div class="animate-in fade-in duration-300">
-              <div class="mb-6">
-                <p class="label-sm mb-4 text-primary px-1 tracking-[0.2em] uppercase">Padrões do Sistema</p>
-                <app-preset-list [presets]="defaultPresets()" (select)="handleSelectPreset($event)" />
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-muted p-4 rounded-2xl">
+                <p class="label-sm text-[10px] text-muted-foreground mb-1">Eixo Vertical</p>
+                <p class="text-xl font-bold font-mono text-primary leading-none">
+                  {{ Math.round(margins().top) }}<span class="opacity-20 mx-1">/</span>{{ Math.round(margins().bottom) }}
+                </p>
               </div>
+              <div class="bg-muted p-4 rounded-2xl">
+                <p class="label-sm text-[10px] text-muted-foreground mb-1">Eixo Horiz</p>
+                <p class="text-xl font-bold font-mono text-primary leading-none">
+                  {{ Math.round(margins().left) }}<span class="opacity-20 mx-1">/</span>{{ Math.round(margins().right) }}
+                </p>
+              </div>
+            </div>
+          </div>
 
-              <div class="pt-6 border-t border-primary/5">
-                <h3 class="title-md mb-4 px-1">Minhas Configurações</h3>
-                <app-preset-list
-                  [presets]="customPresets()"
-                  [onDelete]="true"
-                  (select)="handleSelectPreset($event)"
-                  (delete)="presetsService.deletePreset($event)"
-                />
-              </div>
+          <app-margin-controls [margins]="margins()" [pdfDimensions]="pdfInfo" (marginsChange)="margins.set($event)" />
+
+          @if (favorites().length > 0) {
+            <div class="pt-6 mt-4 border-t border-primary/5 shrink-0">
+              <h3 class="title-md mb-4 px-1">Meus Favoritos</h3>
+              <app-preset-list
+                [presets]="favorites()"
+                [onDelete]="true"
+                (select)="handleSelectPreset($event)"
+                (delete)="presetsService.deletePreset($event)"
+              />
             </div>
           }
 
-          <!-- Manual -->
-          @if (activeTab() === 'manual') {
-            <div class="animate-in fade-in duration-300 flex flex-col flex-1">
-              <div class="space-y-4 shrink-0 mb-6">
-                <div class="flex items-center justify-between">
-                  <h3 class="title-md">Ajuste Fino</h3>
-                  <span appBadge class="bg-primary-container text-on-primary-container text-[10px] px-2 py-0 border-none rounded-full">PT</span>
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                  <div class="bg-muted p-4 rounded-2xl">
-                    <p class="label-sm text-[10px] text-muted-foreground mb-1">Eixo Vertical</p>
-                    <p class="text-xl font-bold font-mono text-primary leading-none">
-                      {{ Math.round(margins().top) }}<span class="opacity-20 mx-1">/</span>{{ Math.round(margins().bottom) }}
-                    </p>
-                  </div>
-                  <div class="bg-muted p-4 rounded-2xl">
-                    <p class="label-sm text-[10px] text-muted-foreground mb-1">Eixo Horiz</p>
-                    <p class="text-xl font-bold font-mono text-primary leading-none">
-                      {{ Math.round(margins().left) }}<span class="opacity-20 mx-1">/</span>{{ Math.round(margins().right) }}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="flex-1 flex flex-col">
-                <app-margin-controls [margins]="margins()" [pdfDimensions]="pdfInfo" (marginsChange)="margins.set($event)" />
-              </div>
-
-              <!-- Save custom preset section -->
-              <div class="pt-6 mt-4 border-t border-primary/5 shrink-0 space-y-3">
-                <p class="label-sm text-primary px-1 tracking-[0.2em] uppercase">Salvar como Predefinição</p>
-                <div class="flex items-center gap-2 bg-muted p-1 rounded-xl">
-                  <input
-                    appInput
-                    [(ngModel)]="newPresetName"
-                    placeholder="Nome da configuração..."
-                    class="h-10 text-sm flex-1 border-none bg-transparent focus-visible:ring-0"
-                    (keydown.enter)="handleSavePreset()"
-                  />
-                  <button
-                    appButton
-                    variant="ghost"
-                    (click)="handleSavePreset()"
-                    [disabled]="!newPresetName.trim()"
-                    class="h-10 px-4 text-secondary hover:bg-secondary/10 rounded-lg label-sm lowercase gap-2"
-                  >
-                    <app-icon name="check" [size]="16" /> salvar
-                  </button>
-                </div>
-              </div>
+          <!-- Save custom preset section -->
+          <div class="pt-6 mt-4 border-t border-primary/5 shrink-0 space-y-3">
+            <p class="label-sm text-primary px-1 tracking-[0.2em] uppercase">Salvar como Favorito</p>
+            <div class="flex items-center gap-2 bg-muted p-1 rounded-xl">
+              <input
+                appInput
+                [(ngModel)]="newPresetName"
+                placeholder="Nome da configuração..."
+                class="h-10 text-sm flex-1 border-none bg-transparent focus-visible:ring-0"
+                (keydown.enter)="handleSavePreset()"
+              />
+              <button
+                appButton
+                variant="ghost"
+                (click)="handleSavePreset()"
+                [disabled]="!newPresetName.trim()"
+                class="h-10 px-4 text-secondary hover:bg-secondary/10 rounded-lg label-sm lowercase gap-2"
+              >
+                <app-icon name="check" [size]="16" /> salvar
+              </button>
             </div>
-          }
+          </div>
         </div>
       </div>
     </div>

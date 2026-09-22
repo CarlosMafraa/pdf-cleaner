@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 
 const FIXTURE_PDF = path.join(__dirname, 'fixtures', 'test.pdf');
+const A4_FIXTURE_PDF = path.join(__dirname, 'fixtures', 'a4-test.pdf');
 const SCREENSHOT_DIR = path.join(__dirname, '..', 'e2e-screenshots');
 
 test.beforeAll(() => {
@@ -51,8 +52,7 @@ test.describe('PDF Cleaner - fluxo completo', () => {
     await page.locator('input[type="file"]').setInputFiles(FIXTURE_PDF);
     await expect(page.getByText('test.pdf')).toBeVisible();
 
-    // Ajusta uma margem manualmente antes de processar (aba Manual)
-    await page.getByRole('button', { name: 'Manual' }).click();
+    // "Manual" já é a aba padrão ao abrir o editor
     const topMarginInput = page.locator('input[type="number"]').first();
     await topMarginInput.fill('30');
     await topMarginInput.blur();
@@ -93,13 +93,10 @@ test.describe('PDF Cleaner - fluxo completo', () => {
     expect(stats.size).toBeGreaterThan(0);
   });
 
-  test('remover margens via drag handle atualiza a régua e muda para a aba Manual', async ({ page }) => {
+  test('remover margens via drag handle atualiza a régua', async ({ page }) => {
     await page.goto('/');
     await page.locator('input[type="file"]').setInputFiles(FIXTURE_PDF);
     await expect(page.getByText('test.pdf')).toBeVisible();
-
-    // Antes de arrastar, a aba padrão é "Automático"
-    await expect(page.getByRole('button', { name: 'Automático' })).toHaveClass(/bg-card/);
 
     const rightHandle = page.locator('.ruler-handle.cursor-ew-resize').nth(1);
     const box = await rightHandle.boundingBox();
@@ -112,13 +109,37 @@ test.describe('PDF Cleaner - fluxo completo', () => {
       await page.mouse.up();
     }
 
-    // Arrastar a régua deve trocar a aba para "Manual" sozinho, sem precisar clicar nela
-    await expect(page.getByRole('button', { name: 'Manual' })).toHaveClass(/bg-card/);
-
     const rightMarginInput = page.locator('input[type="number"]').nth(3);
     await expect
       .poll(async () => Number(await rightMarginInput.inputValue()))
       .toBeGreaterThan(25);
+  });
+
+  test('não existem presets prontos do sistema; salvar cria um Favorito próprio', async ({ page }) => {
+    await page.goto('/');
+    await page.locator('input[type="file"]').setInputFiles(FIXTURE_PDF);
+    await expect(page.getByText('test.pdf')).toBeVisible();
+
+    // Sem favoritos ainda: a seção "Meus Favoritos" não deve existir, e não há
+    // mais nenhum preset pronto do sistema em lugar nenhum da sidebar.
+    await expect(page.getByText('Meus Favoritos')).toHaveCount(0);
+    await expect(page.getByText('Modelos')).toHaveCount(0);
+    await expect(page.getByText(/assinatura digital/i)).toHaveCount(0);
+
+    const topMarginInput = page.locator('input[type="number"]').first();
+    await topMarginInput.fill('30');
+    await topMarginInput.blur();
+
+    await page.getByPlaceholder('Nome da configuração...').fill('Meu Teste');
+    await page.getByRole('button', { name: 'salvar' }).click();
+
+    await expect(page.getByText('Meus Favoritos')).toBeVisible();
+    await expect(page.getByText('Meu Teste')).toBeVisible();
+
+    // Selecionar o favorito de volta reaplica a margem salva
+    await page.locator('input[type="number"]').first().fill('0');
+    await page.getByText('Meu Teste').click();
+    await expect.poll(async () => Number(await topMarginInput.inputValue())).toBe(30);
   });
 
   test('PDF cabe na tela sem precisar de scroll no canvas nem na sidebar', async ({ page }) => {
@@ -136,4 +157,59 @@ test.describe('PDF Cleaner - fluxo completo', () => {
     const sidebarOverflow = await sidebar.evaluate((el) => el.scrollHeight - el.clientHeight);
     expect(sidebarOverflow).toBeLessThanOrEqual(2);
   });
+
+  test('com vários favoritos salvos, a página não rola inteira e o header continua visível', async ({ page }) => {
+    // Este é o caso que expôs o bug de verdade: com pouco conteúdo (sem favoritos)
+    // a página cabia por acaso, mas o container faltava min-h-0 na cadeia de flex,
+    // então bastava a sidebar crescer (com favoritos) pra empurrar a página inteira
+    // pra baixo e o header sumir — sem isso o teste anterior não pegava o problema.
+    await page.setViewportSize({ width: 1366, height: 768 });
+    await page.goto('/');
+    await page.locator('input[type="file"]').setInputFiles(FIXTURE_PDF);
+    await expect(page.getByText('test.pdf')).toBeVisible();
+
+    for (const name of ['Favorito A', 'Favorito B', 'Favorito C']) {
+      await page.getByPlaceholder('Nome da configuração...').fill(name);
+      await page.getByRole('button', { name: 'salvar' }).click();
+    }
+    await expect(page.getByText('Favorito C')).toBeVisible();
+
+    // A PÁGINA (html/body) não deve crescer além da viewport...
+    const pageOverflow = await page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight);
+    expect(pageOverflow).toBeLessThanOrEqual(2);
+
+    // ...então o header continua visível e clicável mesmo com a sidebar cheia.
+    await expect(page.getByText('Atelier de Edição')).toBeVisible();
+    await expect(page.getByRole('button', { name: /visualizar/i })).toBeVisible();
+
+    // A sidebar, por outro lado, PODE (e deve) rolar por dentro — é o comportamento
+    // esperado de uma lista de dados que cresce, diferente da página toda rolar.
+    const sidebar = page.locator('[class*="w-full"][class*="sm:w-80"]').first();
+    const sidebarOverflow = await sidebar.evaluate((el) => el.scrollHeight - el.clientHeight);
+    expect(sidebarOverflow).toBeGreaterThan(2);
+  });
+
+  // Resoluções comuns de notebook/desktop — cobre o bug relatado originalmente
+  // ("PDF não cabia na tela, aparecia scroll") com um PDF tamanho A4 de verdade
+  // (595x841pt, mesmo tamanho de um documento escaneado real).
+  for (const viewport of [
+    { width: 1280, height: 720 },
+    { width: 1366, height: 768 },
+    { width: 1920, height: 1080 },
+  ]) {
+    test(`PDF A4 (595x841) cabe sem scroll em ${viewport.width}x${viewport.height}`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto('/');
+      await page.locator('input[type="file"]').setInputFiles(A4_FIXTURE_PDF);
+      await expect(page.getByText('a4-test.pdf')).toBeVisible();
+      await page.waitForTimeout(300);
+
+      const canvasArea = page.locator('[class*="overflow-auto"][class*="bg-muted"]').first();
+      const canvasOverflow = await canvasArea.evaluate((el) => el.scrollHeight - el.clientHeight);
+      expect(canvasOverflow).toBeLessThanOrEqual(2);
+
+      const pageOverflow = await page.evaluate(() => document.documentElement.scrollHeight - window.innerHeight);
+      expect(pageOverflow).toBeLessThanOrEqual(2);
+    });
+  }
 });

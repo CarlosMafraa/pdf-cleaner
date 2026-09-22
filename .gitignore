@@ -47,7 +47,6 @@ Thumbs.db
 /test-results/
 /playwright-report/
 /e2e-screenshots/
-/e2e/fixtures/test.pdf
 
 # Misc
 *.local

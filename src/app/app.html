@@ -1,6 +1,7 @@
 @if (view() === 'editor' && pdfBytes() && pdfInfo()) {
   <div class="h-screen flex flex-col bg-background">
     <app-pdf-editor
+      class="flex-1 min-h-0"
       [file]="files()[currentFileIndex()]"
       [pdfBytes]="pdfBytes()!"
       [pdfInfo]="pdfInfo()!"
