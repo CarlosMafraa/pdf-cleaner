@@ -78,6 +78,13 @@ test.describe('PDF Cleaner - fluxo completo', () => {
       .toBe(originalSize.w);
     await expect(canvases.nth(1)).toHaveJSProperty('height', originalSize.h);
 
+    // A régua do lado "Referência Original" empurra aquele papel 24px pra baixo/
+    // direita; sem o mesmo respiro do lado "Resultado Final", os dois pareciam
+    // ter tamanhos diferentes (o papel da esquerda "começava" mais tarde).
+    const originalBox = await canvases.nth(0).boundingBox();
+    const processedBox = await canvases.nth(1).boundingBox();
+    expect(Math.abs(originalBox!.y - processedBox!.y)).toBeLessThanOrEqual(2);
+
     await page.screenshot({ path: path.join(SCREENSHOT_DIR, '03-comparison.png'), fullPage: true });
 
     // Exporta e valida o download
