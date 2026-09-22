@@ -27,7 +27,7 @@ jobs:
 
       - run: npm ci
 
-      - run: npx ng build --base-href /pdf-cleaner-pro/
+      - run: npx ng build --base-href /pdf-cleaner/
 
       - uses: actions/upload-pages-artifact@v3
         with:

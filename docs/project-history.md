@@ -92,7 +92,7 @@ Rebuild + os 4 testes E2E do Playwright revalidados após cada mudança, incluin
 
 ## Pipeline
 
-**CI/CD** (`.github/workflows/deploy-pages.yml`): a cada push na `master`, builda com `ng build --base-href /pdf-cleaner-pro/` e publica `dist/pdf-cleaner/browser` no GitHub Pages via `actions/deploy-pages`. Site: https://carlosmafraa.github.io/pdf-cleaner-pro/.
+**CI/CD** (`.github/workflows/deploy-pages.yml`): a cada push na `master`, builda com `ng build --base-href /pdf-cleaner/` e publica `dist/pdf-cleaner/browser` no GitHub Pages via `actions/deploy-pages`. Site: https://carlosmafraa.github.io/pdf-cleaner/ (o repositório foi renomeado de `pdf-cleaner-pro` para `pdf-cleaner` no GitHub — o `base-href` foi atualizado junto).
 
 **Pipeline local de desenvolvimento**:
 1. `npm install` → dispara `postinstall` (`scripts/copy-pdf-worker.mjs`), que copia o worker do `pdfjs-dist` para `public/`.
