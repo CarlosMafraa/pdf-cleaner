@@ -1,56 +1,66 @@
 <div class="h-full flex flex-col bg-background" #containerRef>
-  <!-- Header - Editorial Atelier -->
-  <div class="flex flex-wrap items-center justify-between gap-y-3 px-6 sm:px-12 py-4 glass-panel">
-    <div class="flex items-center gap-6">
+  <!-- Topo: arquivo, chave Original/Resultado e zoom -->
+  <header class="flex flex-wrap items-center gap-x-4 gap-y-2 px-3 sm:px-6 py-2.5 border-b border-primary/10 bg-background">
+    <div class="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 basis-56">
       <button
-        appButton
-        variant="ghost"
-        size="icon"
+        tuiIconButton
+        type="button"
+        appearance="flat"
+        size="m"
+        aria-label="Voltar para o início"
         (click)="back.emit()"
-        class="rounded-full hover:bg-background/20"
+        class="shrink-0"
       >
         <app-icon name="arrow-left" [size]="20" />
       </button>
 
-      <div class="hidden sm:block">
-        <p class="label-sm mb-0.5 text-muted-foreground">Atelier de Edição</p>
-        <div class="flex items-baseline gap-4">
-          <h2 class="title-md truncate max-w-sm">
-            {{ file.name }}
-          </h2>
-          <p class="label-sm font-mono text-muted-foreground">
-            {{ pdfInfo.totalPages }} PÁG &bull; {{ Math.round(pdfInfo.width) }}&times;{{ Math.round(pdfInfo.height) }}
-          </p>
-        </div>
+      <div class="min-w-0">
+        <h1 class="title-md truncate">{{ file.name }}</h1>
+        <p class="text-sm text-muted-foreground whitespace-nowrap tabular-nums">
+          {{ pdfInfo.totalPages }} {{ pdfInfo.totalPages === 1 ? 'página' : 'páginas' }}<span class="hidden sm:inline">
+            &middot; {{ Math.round(pdfInfo.width) }} &times; {{ Math.round(pdfInfo.height) }} pt</span>
+        </p>
       </div>
     </div>
 
-    <div class="flex flex-wrap items-center justify-end gap-3 sm:gap-6">
+    <div class="flex flex-wrap items-center gap-2 sm:gap-3">
       @if (pdfInfo.totalPages > 1) {
-        <div class="flex items-center gap-2 bg-muted rounded-full p-1 px-3">
+        <div class="flex items-center gap-1 bg-primary/5 rounded-xl p-0.5">
           <button
-            appButton
-            variant="ghost"
-            size="icon"
+            tuiIconButton
+            type="button"
+            appearance="flat"
+            size="xs"
+            aria-label="Página anterior"
             (click)="goToPage(currentPage() - 1)"
             [disabled]="currentPage() === 1"
-            class="h-7 w-7 rounded-full"
           >
             <app-icon name="chevron-left" [size]="16" />
           </button>
-          <span class="px-2 label-sm font-mono">{{ currentPage() }} / {{ pdfInfo.totalPages }}</span>
+          <span class="px-1 text-sm font-semibold text-primary tabular-nums">{{ currentPage() }} / {{ pdfInfo.totalPages }}</span>
           <button
-            appButton
-            variant="ghost"
-            size="icon"
+            tuiIconButton
+            type="button"
+            appearance="flat"
+            size="xs"
+            aria-label="Próxima página"
             (click)="goToPage(currentPage() + 1)"
             [disabled]="currentPage() === pdfInfo.totalPages"
-            class="h-7 w-7 rounded-full"
           >
             <app-icon name="chevron-right" [size]="16" />
           </button>
         </div>
       }
+
+      <tui-segmented
+        size="s"
+        [activeItemIndex]="view() === 'result' ? 1 : 0"
+        (activeItemIndexChange)="setView($event === 1 ? 'result' : 'original')"
+        aria-label="Visualização"
+      >
+        <button type="button">Original</button>
+        <button type="button" [disabled]="!resultFresh()">Resultado</button>
+      </tui-segmented>
 
       <app-zoom-controls
         [zoom]="zoom()"
@@ -58,184 +68,154 @@
         (fitToScreen)="handleFitToScreen()"
         (fullscreen)="toggleFullscreen()"
       />
+    </div>
+  </header>
 
-      <div class="flex items-center gap-2 pl-4 border-l border-primary/10">
-        @if (!showComparison()) {
-          <button
-            appButton
-            (click)="handleProcess()"
-            [disabled]="isProcessing"
-            class="h-10 px-6 rounded-full btn-primary-atelier font-bold shadow-none border-none shrink-0"
-          >
-            @if (isProcessing) {
-              <div class="flex items-center gap-2">
-                <app-icon name="loader-2" [size]="16" class="animate-spin" />
-                <span class="uppercase text-[11px] tracking-widest text-white leading-none pt-0.5">Limpando...</span>
-              </div>
-            } @else {
-              <div class="flex items-center gap-2">
-                <app-icon name="eye" [size]="16" />
-                <span class="uppercase text-[11px] tracking-widest text-white leading-none pt-0.5">Visualizar</span>
-              </div>
-            }
-          </button>
+  <!-- Documento ocupando a tela -->
+  <div class="flex-1 min-h-0 overflow-auto bg-muted/50 p-4 sm:p-8 scrollbar-thin" #canvasContainerRef>
+    <div class="min-h-full flex flex-col items-center justify-center gap-3">
+      <p #captionRef class="text-sm text-center text-muted-foreground max-w-md flex items-start gap-2" aria-live="polite">
+        @if (view() === 'original') {
+          Arraste as bordas douradas da página ou digite as margens. A área hachurada fica em branco em todas as páginas.
+        } @else if (usedFallback) {
+          <app-icon name="alert-circle" [size]="16" class="shrink-0 mt-0.5 text-secondary" />
+          <span class="text-secondary">Este PDF precisou ser convertido em imagem. O texto do arquivo final não poderá ser selecionado nem copiado.</span>
         } @else {
-          <button
-            appButton
-            variant="ghost"
-            (click)="handleHideComparison()"
-            class="h-10 px-4 rounded-full text-primary font-bold hover:bg-muted/50 transition-colors"
-          >
-            <div class="flex items-center gap-2 uppercase text-[11px] tracking-widest pt-0.5">
-              <app-icon name="eye-off" [size]="16" />
-              Voltar
-            </div>
-          </button>
-
-          <button
-            appButton
-            (click)="handleDownload()"
-            class="h-10 px-6 rounded-full btn-primary-atelier font-bold shadow-none border-none"
-          >
-            <div class="flex items-center gap-2">
-              <app-icon name="download" [size]="16" />
-              <span class="uppercase text-[11px] tracking-widest text-white leading-none pt-0.5">Exportar Arquivo</span>
-            </div>
-          </button>
+          Assim fica o PDF limpo. Para mudar alguma margem, é só editar abaixo.
         }
+      </p>
+
+      <!-- Original, com réguas e alças de arraste -->
+      <div class="relative" [class.hidden]="view() === 'result'">
+        <app-rulers [width]="pdfInfo.width" [height]="pdfInfo.height" [scale]="zoom()" [margins]="margins()" />
+
+        <div
+          class="relative canvas-container ambient-shadow"
+          style="margin-left: 24px; margin-top: 24px"
+          [style.width.px]="scaledWidth()"
+          [style.height.px]="scaledHeight()"
+        >
+          <canvas #canvasRef class="block"></canvas>
+
+          <app-crop-handles
+            [width]="pdfInfo.width"
+            [height]="pdfInfo.height"
+            [scale]="zoom()"
+            [margins]="margins()"
+            (marginsChange)="setMargins($event)"
+          />
+        </div>
+      </div>
+
+      <!-- Resultado (mesmo deslocamento das réguas, pra página não "pular" ao trocar) -->
+      <div class="relative" [class.hidden]="view() !== 'result'">
+        <div
+          class="relative canvas-container shadow-2xl ring-1 ring-primary/5"
+          style="margin-left: 24px; margin-top: 24px"
+          [style.width.px]="scaledWidth()"
+          [style.height.px]="scaledHeight()"
+        >
+          <canvas #processedCanvasRef class="block" aria-label="Resultado"></canvas>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Main content -->
-  <div class="flex-1 min-h-0 flex flex-col sm:flex-row overflow-y-auto sm:overflow-hidden relative">
-    <!-- Canvas area (Recessed) -->
-    <div class="flex-1 min-h-[60vh] sm:min-h-0 overflow-auto bg-muted/20 p-4 sm:p-12 scrollbar-thin" #canvasContainerRef>
-      <div class="flex flex-col items-center min-h-full justify-center">
-        <div class="flex flex-col sm:flex-row gap-16 items-start justify-center">
-          <!-- Original -->
-          <div class="flex flex-col items-center">
-            @if (showComparison()) {
-              <p class="label-sm mb-6 text-muted-foreground uppercase tracking-[0.2em]">Referência Original</p>
-            }
-
-            <div class="relative">
-              <app-rulers [width]="pdfInfo.width" [height]="pdfInfo.height" [scale]="zoom()" [margins]="margins()" />
-
-              <div
-                class="relative canvas-container ambient-shadow"
-                style="margin-left: 24px; margin-top: 24px"
-                [style.width.px]="scaledWidth()"
-                [style.height.px]="scaledHeight()"
-              >
-                <canvas #canvasRef class="block"></canvas>
-
-                @if (!showComparison()) {
-                  <app-crop-handles
-                    [width]="pdfInfo.width"
-                    [height]="pdfInfo.height"
-                    [scale]="zoom()"
-                    [margins]="margins()"
-                    (marginsChange)="margins.set($event)"
-                  />
-                }
-              </div>
-            </div>
-          </div>
-
-          <!-- Processado -->
-          @if (showComparison() && processedPdfDoc()) {
-            <div class="flex flex-col items-center animate-in fade-in slide-in-from-right-4 duration-500">
-              <p class="label-sm mb-6 text-primary flex items-center gap-2 uppercase tracking-[0.2em]">
-                <app-icon name="check" [size]="14" />
-                Resultado Final
-              </p>
-
-              @if (usedFallback) {
-                <p class="label-sm mb-4 text-secondary flex items-center gap-2 uppercase tracking-[0.15em] max-w-xs text-center">
-                  <app-icon name="alert-circle" [size]="14" />
-                  PDF convertido em imagem &mdash; texto não é mais selecionável
-                </p>
-              }
-
-              <div
-                class="relative canvas-container shadow-2xl ring-1 ring-primary/5"
-                style="margin-left: 24px; margin-top: 24px"
-                [style.width.px]="scaledWidth()"
-                [style.height.px]="scaledHeight()"
-              >
-                <canvas #processedCanvasRef class="block"></canvas>
-              </div>
-            </div>
-          }
-        </div>
+  <!-- Barra flutuante: margens, favoritos e ação principal -->
+  <div class="shrink-0 bg-muted/50 px-3 sm:px-6 pb-3 sm:pb-4">
+    <div
+      class="mx-auto max-w-4xl bg-card rounded-[18px] ring-1 ring-primary/10 shadow-[0_18px_40px_-16px_hsl(var(--foreground)/0.35)] flex flex-wrap items-center gap-x-3 gap-y-2 px-3 py-2.5"
+      role="toolbar"
+      aria-label="Margens e ações"
+    >
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <app-margin-controls [margins]="margins()" [pdfDimensions]="pdfInfo" (marginsChange)="setMargins($event)" />
       </div>
-    </div>
 
-    <!-- Sidebar - Organic Editorial (Soft Cream) -->
-    <div class="w-full sm:w-80 bg-background sm:h-full border-l border-primary/5 shadow-[-12px_0_40px_hsl(var(--secondary)/0.03)] relative z-40 sm:overflow-y-auto scrollbar-thin">
-      <div class="flex flex-col min-h-full">
-        <div class="flex-1 px-8 py-8 flex flex-col">
-          <div class="space-y-4 shrink-0 mb-6">
-            <div class="flex items-center justify-between">
-              <h3 class="title-md">Ajuste Fino</h3>
-              <span appBadge class="bg-primary-container text-on-primary-container text-[10px] px-2 py-0 border-none rounded-full">PT</span>
-            </div>
+      <span class="hidden sm:block w-px self-stretch bg-primary/10" aria-hidden="true"></span>
 
-            <div class="grid grid-cols-2 gap-3">
-              <div class="bg-muted p-4 rounded-2xl">
-                <p class="label-sm text-[10px] text-muted-foreground mb-1">Eixo Vertical</p>
-                <p class="text-xl font-bold font-mono text-primary leading-none">
-                  {{ Math.round(margins().top) }}<span class="opacity-20 mx-1">/</span>{{ Math.round(margins().bottom) }}
-                </p>
-              </div>
-              <div class="bg-muted p-4 rounded-2xl">
-                <p class="label-sm text-[10px] text-muted-foreground mb-1">Eixo Horiz</p>
-                <p class="text-xl font-bold font-mono text-primary leading-none">
-                  {{ Math.round(margins().left) }}<span class="opacity-20 mx-1">/</span>{{ Math.round(margins().right) }}
-                </p>
-              </div>
-            </div>
-          </div>
+      <button
+        tuiButton
+        type="button"
+        appearance="flat"
+        size="s"
+        [tuiDropdown]="favoritesMenu"
+        tuiDropdownDirection="top"
+        [tuiDropdownOpen]="favoritesOpen()"
+        (tuiDropdownOpenChange)="favoritesOpen.set($event)"
+      >
+        <app-icon name="bookmark" [size]="16" />
+        Favoritos
+        @if (favorites().length > 0) {
+          <span class="text-xs font-semibold text-muted-foreground tabular-nums">{{ favorites().length }}</span>
+        }
+      </button>
 
-          <app-margin-controls [margins]="margins()" [pdfDimensions]="pdfInfo" (marginsChange)="margins.set($event)" />
 
-          @if (favorites().length > 0) {
-            <div class="pt-6 mt-4 border-t border-primary/5 shrink-0">
-              <h3 class="title-md mb-4 px-1">Meus Favoritos</h3>
-              <app-preset-list
-                [presets]="favorites()"
-                [onDelete]="true"
-                (select)="handleSelectPreset($event)"
-                (delete)="presetsService.deletePreset($event)"
-              />
-            </div>
+      @if (resultFresh()) {
+        <button tuiButton type="button" appearance="primary" size="m" (click)="handleDownload()" class="ml-auto max-sm:w-full">
+          <app-icon name="download" [size]="16" />
+          Baixar PDF
+        </button>
+      } @else {
+        <button
+          tuiButton
+          type="button"
+          appearance="primary"
+          size="m"
+          (click)="handleProcess()"
+          [disabled]="isProcessing"
+          class="ml-auto max-sm:w-full"
+        >
+          @if (isProcessing) {
+            <app-icon name="loader-2" [size]="16" class="animate-spin" />
+            Processando...
+          } @else {
+            <app-icon name="eye" [size]="16" />
+            Ver resultado
           }
-
-          <!-- Save custom preset section -->
-          <div class="pt-6 mt-4 border-t border-primary/5 shrink-0 space-y-3">
-            <p class="label-sm text-primary px-1 tracking-[0.2em] uppercase">Salvar como Favorito</p>
-            <div class="flex items-center gap-2 bg-muted p-1 rounded-xl">
-              <input
-                appInput
-                [(ngModel)]="newPresetName"
-                placeholder="Nome da configuração..."
-                class="h-10 text-sm flex-1 border-none bg-transparent focus-visible:ring-0"
-                (keydown.enter)="handleSavePreset()"
-              />
-              <button
-                appButton
-                variant="ghost"
-                (click)="handleSavePreset()"
-                [disabled]="!newPresetName.trim()"
-                class="h-10 px-4 text-secondary hover:bg-secondary/10 rounded-lg label-sm lowercase gap-2"
-              >
-                <app-icon name="check" [size]="16" /> salvar
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+        </button>
+      }
     </div>
   </div>
 </div>
+
+<ng-template #favoritesMenu>
+  <div class="w-[min(320px,calc(100vw-32px))] p-3 space-y-3">
+    <p class="headline-md !text-lg">Favoritos</p>
+
+    @if (favorites().length > 0) {
+      <app-preset-list
+        [presets]="favorites()"
+        [onDelete]="true"
+        (select)="handleSelectPreset($event)"
+        (delete)="presetsService.deletePreset($event)"
+      />
+    } @else {
+      <p class="text-sm leading-relaxed text-muted-foreground">Salve as margens atuais para usar de novo em outros PDFs.</p>
+    }
+
+    <div class="flex items-center gap-2">
+      <tui-textfield tuiTextfieldSize="s" class="flex-1 min-w-0">
+        <input
+          tuiInput
+          [(ngModel)]="newPresetName"
+          placeholder="Nome do favorito"
+          aria-label="Nome do favorito"
+          (keydown.enter)="handleSavePreset()"
+        />
+      </tui-textfield>
+      <button
+        tuiButton
+        type="button"
+        appearance="secondary"
+        size="s"
+        (click)="handleSavePreset()"
+        [disabled]="!newPresetName.trim()"
+        class="shrink-0"
+      >
+        Salvar
+      </button>
+    </div>
+  </div>
+</ng-template>

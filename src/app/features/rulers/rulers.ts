@@ -14,7 +14,7 @@ interface Mark {
     <div class="relative select-none">
       <!-- Canto - Editorial Indicator -->
       <div class="absolute top-0 left-0 bg-muted flex items-center justify-center" [style.width.px]="rulerSize" [style.height.px]="rulerSize">
-        <span class="label-sm text-muted-foreground">PT</span>
+        <span class="text-[11px] font-semibold text-muted-foreground">pt</span>
       </div>
 
       <!-- Régua horizontal -->
@@ -23,7 +23,7 @@ interface Mark {
           @for (mark of horizontalMarks(); track mark.pos) {
             <line [attr.x1]="mark.pos" [attr.y1]="mark.isMajor ? 8 : 14" [attr.x2]="mark.pos" [attr.y2]="rulerSize" stroke="currentColor" stroke-width="1" class="text-primary/40" />
             @if (mark.isMajor) {
-              <text [attr.x]="mark.pos + 3" y="12" font-size="9" fill="currentColor" class="text-primary/70 font-mono">{{ mark.value }}</text>
+              <text [attr.x]="mark.pos + 3" y="12" font-size="9" fill="currentColor" class="text-primary/70 tabular-nums">{{ mark.value }}</text>
             }
           }
         </svg>
@@ -46,7 +46,7 @@ interface Mark {
           @for (mark of verticalMarks(); track mark.pos) {
             <line [attr.x1]="mark.isMajor ? 8 : 14" [attr.y1]="mark.pos" [attr.x2]="rulerSize" [attr.y2]="mark.pos" stroke="currentColor" stroke-width="1" class="text-primary/40" />
             @if (mark.isMajor) {
-              <text x="4" [attr.y]="mark.pos + 3" font-size="9" fill="currentColor" class="text-primary/70 font-mono" [attr.transform]="'rotate(-90, 4, ' + mark.pos + ')'">{{ mark.value }}</text>
+              <text x="4" [attr.y]="mark.pos + 3" font-size="9" fill="currentColor" class="text-primary/70 tabular-nums" [attr.transform]="'rotate(-90, 4, ' + mark.pos + ')'">{{ mark.value }}</text>
             }
           }
         </svg>

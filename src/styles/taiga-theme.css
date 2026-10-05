@@ -1,0 +1,73 @@
+/*
+ * Tema do Taiga UI apontado pra paleta/fontes do projeto. O Taiga não tem
+ * modo "sem estilo": cada componente injeta o próprio CSS, que lê estas
+ * variáveis --tui-*. Por isso a cor e a fonte dos componentes vêm daqui, sempre
+ * derivadas dos tokens de colors.css/fonts.css — trocar a paleta lá já muda os
+ * componentes do Taiga também.
+ *
+ * Precisa carregar depois de taiga-ui-theme.less (ordem em angular.json): os
+ * dois definem as variáveis em :root e [tuiTheme], então quem vem por último
+ * vence.
+ */
+:root,
+[tuiTheme] {
+  --tui-typography-family-text: var(--font-sans);
+  --tui-typography-family-display: var(--font-display);
+
+  --tui-background-base: hsl(var(--background));
+  --tui-background-base-alt: hsl(var(--muted));
+  --tui-background-elevation-1: hsl(var(--card));
+
+  /* accent-1 = ação principal (dourado), igual aos botões "Visualizar"/"Exportar" */
+  --tui-background-accent-1: hsl(var(--secondary));
+  --tui-background-accent-1-hover: color-mix(in srgb, hsl(var(--secondary)) 88%, white);
+  --tui-background-accent-1-pressed: color-mix(in srgb, hsl(var(--secondary)) 85%, black);
+  --tui-text-primary-on-accent-1: hsl(var(--secondary-foreground));
+
+  --tui-background-accent-2: hsl(var(--primary));
+  --tui-background-accent-2-hover: hsl(var(--primary-container));
+  --tui-background-accent-2-pressed: color-mix(in srgb, hsl(var(--primary)) 85%, black);
+  --tui-text-primary-on-accent-2: hsl(var(--primary-foreground));
+
+  /* Tooltip (hint) usa o "oposto" do fundo: marrom-escuro quente em vez do cinza frio padrão */
+  --tui-background-accent-opposite: hsl(var(--foreground));
+
+  --tui-background-neutral-1: hsl(var(--primary) / 0.06);
+  --tui-background-neutral-1-hover: hsl(var(--primary) / 0.1);
+  --tui-background-neutral-1-pressed: hsl(var(--primary) / 0.14);
+  --tui-background-neutral-2: hsl(var(--primary) / 0.1);
+
+  --tui-text-primary: hsl(var(--foreground));
+  --tui-text-secondary: hsl(var(--muted-foreground));
+  --tui-text-tertiary: hsl(var(--muted-foreground) / 0.75);
+  --tui-text-action: hsl(var(--primary));
+  --tui-text-action-hover: hsl(var(--primary-container));
+
+  --tui-border-normal: hsl(var(--primary) / 0.12);
+  --tui-border-hover: hsl(var(--primary) / 0.24);
+  --tui-border-focus: hsl(var(--ring));
+
+  --tui-status-negative: hsl(var(--destructive));
+  --tui-text-negative: hsl(var(--destructive));
+
+  /* Cantos mais arredondados que o padrão do Taiga, no tom "orgânico" do ateliê */
+  --tui-radius-m: 0.875rem;
+  --tui-radius-l: 1rem;
+}
+
+/* Campo de margem com valor > 0: borda e número em dourado, a mesma cor das
+   bordas hachuradas na página — liga o campo ao que ele corta. */
+tui-textfield.margin-on {
+  --tui-border-normal: hsl(var(--secondary) / 0.55);
+  --tui-border-hover: hsl(var(--secondary) / 0.8);
+  --tui-text-primary: hsl(var(--secondary));
+}
+
+/* tui-root impõe a fonte body-s (14px) a tudo; o conteúdo do app segue a
+   tipografia do body (fonts.css + classes Tailwind), e os componentes do
+   Taiga continuam definindo a própria fonte. `body tui-root` ganha em
+   especificidade do CSS que o TuiRoot injeta em tempo de execução. */
+body tui-root {
+  font: inherit;
+  color: inherit;
+}

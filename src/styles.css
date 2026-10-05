@@ -1,4 +1,6 @@
 @import './styles/colors.css';
+@import './styles/fonts.css';
+@import './styles/taiga-theme.css';
 
 @tailwind base;
 @tailwind components;
@@ -11,7 +13,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
 }
@@ -23,14 +25,21 @@
   .surface-container { background-color: #F6EDDC; } /* Recessed beige */
   .surface-variant { background-color: #EAE2D1; }   /* Input field base */
 
-  /* Typography: Editorial Voice (Inter) - UX Senior Legibility Audit */
+  /* Typography: Editorial Voice (Fraunces + Public Sans) - ver docs/design.md §3 */
   .display-sm {
-    @apply font-bold tracking-[-0.03em] leading-[1.1] text-primary;
-    font-size: 3.5rem;
+    @apply font-display font-semibold tracking-[-0.01em] leading-[1.08] text-primary text-balance;
+    font-size: clamp(1.9rem, 4.2vw, 3rem);
+  }
+
+  /* Subtítulos de seção (landing) — serifada, caixa normal, mais editorial
+     que um "eyebrow label" todo-maiúsculo genérico. */
+  .headline-md {
+    @apply font-display font-semibold tracking-[-0.01em] leading-[1.2] text-primary;
+    font-size: 1.45rem;
   }
 
   .title-md {
-    @apply font-bold tracking-tight text-primary;
+    @apply font-sans font-bold tracking-tight text-primary;
     font-size: 1.25rem; /* 20px - High Legibility Header */
   }
 
@@ -94,16 +103,18 @@
     box-shadow: 0 4px 12px hsl(var(--secondary) / 0.3);
   }
 
+  /* A barra visível tem só 4px — difícil de acertar com o mouse. O
+     pseudo-elemento invisível aumenta a área de clique em 8px pra cada lado
+     sem mudar o desenho (clique no ::before conta como clique na alça). */
+  .ruler-handle::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+  }
+
   /* Design System vNext: Section Gaps */
   .vnext-section-gap { @apply mb-10; } /* 40px */
   .vnext-element-gap { @apply space-y-3; } /* 12px */
-}
-
-/* Base resets */
-body {
-  @apply bg-background text-foreground;
-  font-family: 'Inter', sans-serif;
-  -webkit-font-smoothing: antialiased;
 }
 
 /* Scrollbar */

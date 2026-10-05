@@ -1,0 +1,43 @@
+/*
+ * Fontes hospedadas localmente (src/styles/fonts/) em vez de um <link> pro
+ * Google Fonts. O app já se vende como "processamento 100% local, sem
+ * cookies" — ir buscar fonte num domínio externo toda carga de página
+ * contradiz essa proposta, além de adicionar uma espera de rede extra antes
+ * do texto aparecer. Os arquivos ficam em src/ (não em public/) porque o
+ * builder do Angular resolve `url()` relativo em CSS global contra a pasta
+ * de origem do CSS, via esbuild — um caminho absoluto (`/fonts/...`) não é
+ * reescrito para respeitar `--base-href` no deploy do GitHub Pages.
+ *
+ * Fraunces e Public Sans são fontes variáveis (Google serve o mesmo arquivo
+ * pra várias declarações de peso) — por isso cada @font-face aqui cobre uma
+ * faixa de `font-weight`, não um peso fixo.
+ */
+
+@font-face {
+  font-family: 'Fraunces';
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url('fonts/fraunces-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Fraunces';
+  font-style: italic;
+  font-weight: 500 600;
+  font-display: swap;
+  src: url('fonts/fraunces-italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Public Sans';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('fonts/public-sans.woff2') format('woff2');
+}
+
+:root {
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
+}

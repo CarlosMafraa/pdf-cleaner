@@ -1,40 +1,48 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { TuiButton } from '@taiga-ui/core';
 import { IconComponent } from '../../ui/icon/icon';
-import type { Preset } from '../../core/presets.service';
+import type { Margins, Preset } from '../../core/presets.service';
+
+const SIDE_LABELS: [keyof Margins, string][] = [
+  ['top', 'Sup.'],
+  ['bottom', 'Inf.'],
+  ['left', 'Esq.'],
+  ['right', 'Dir.'],
+];
 
 @Component({
   selector: 'app-preset-list',
   standalone: true,
-  imports: [IconComponent],
+  imports: [IconComponent, TuiButton],
   template: `
-    <div class="space-y-2">
+    <ul class="space-y-1.5">
       @for (preset of presets; track preset.id) {
-        <div
-          class="group flex flex-col p-4 rounded-xl hover:bg-muted transition-all ring-1 ring-transparent hover:ring-primary/5 cursor-pointer"
-          (click)="select.emit(preset)"
-        >
-          <div class="flex items-start justify-between">
-            <div class="flex-1 pr-4">
-              <span class="font-bold text-sm tracking-tight text-foreground group-hover:text-primary transition-colors">
-                {{ preset.name }}
-              </span>
-              <p class="text-[10px] text-muted-foreground mt-1 uppercase tracking-wider leading-relaxed">
-                {{ preset.description }}
-              </p>
-            </div>
+        <li class="flex items-center gap-1 rounded-xl bg-muted/60 hover:bg-muted transition-colors">
+          <button
+            type="button"
+            class="flex-1 min-w-0 text-left px-3 py-2.5 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            (click)="select.emit(preset)"
+          >
+            <span class="block font-semibold text-sm text-foreground truncate">{{ preset.name }}</span>
+            <span class="block text-xs text-muted-foreground mt-0.5 tabular-nums">{{ summary(preset.margins) }}</span>
+          </button>
 
-            @if (onDelete) {
-              <button
-                (click)="handleDelete($event, preset.id)"
-                class="p-2 rounded-lg text-primary/60 hover:text-destructive hover:bg-destructive/10 opacity-0 group-hover:opacity-100 transition-all"
-              >
-                <app-icon name="trash-2" [size]="16" />
-              </button>
-            }
-          </div>
-        </div>
+          @if (onDelete) {
+            <button
+              tuiIconButton
+              type="button"
+              appearance="flat"
+              size="xs"
+              class="shrink-0 mr-1.5"
+              [attr.aria-label]="'Excluir favorito ' + preset.name"
+              (click)="delete.emit(preset.id)"
+            >
+              <app-icon name="trash-2" [size]="14" />
+            </button>
+          }
+        </li>
       }
-    </div>
+    </ul>
   `,
 })
 export class PresetListComponent {
@@ -43,8 +51,10 @@ export class PresetListComponent {
   @Output() select = new EventEmitter<Preset>();
   @Output() delete = new EventEmitter<string>();
 
-  handleDelete(e: Event, id: string) {
-    e.stopPropagation();
-    this.delete.emit(id);
+  summary(margins: Margins): string {
+    const sides = SIDE_LABELS.filter(([side]) => margins[side] > 0).map(
+      ([side, label]) => `${label} ${Math.round(margins[side])}`
+    );
+    return sides.length ? `${sides.join(' · ')} pt` : 'Sem margens';
   }
 }

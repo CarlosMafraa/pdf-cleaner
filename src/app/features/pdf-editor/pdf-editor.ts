@@ -15,11 +15,10 @@ import {
   signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TuiButton, TuiDropdown, TuiInput } from '@taiga-ui/core';
+import { TuiSegmented } from '@taiga-ui/kit';
 
 import { IconComponent } from '../../ui/icon/icon';
-import { ButtonDirective } from '../../ui/button/button';
-import { BadgeDirective } from '../../ui/badge/badge';
-import { InputDirective } from '../../ui/input/input';
 import { RulersComponent } from '../rulers/rulers';
 import { CropHandlesComponent } from '../rulers/crop-handles';
 import { ZoomControlsComponent } from '../zoom-controls/zoom-controls';
@@ -41,9 +40,10 @@ export interface PdfInfo {
   imports: [
     FormsModule,
     IconComponent,
-    ButtonDirective,
-    BadgeDirective,
-    InputDirective,
+    TuiButton,
+    TuiDropdown,
+    TuiInput,
+    TuiSegmented,
     RulersComponent,
     CropHandlesComponent,
     ZoomControlsComponent,
@@ -67,6 +67,7 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
   @ViewChild('canvasContainerRef') canvasContainerRef!: ElementRef<HTMLDivElement>;
   @ViewChild('canvasRef') canvasRef!: ElementRef<HTMLCanvasElement>;
   @ViewChild('processedCanvasRef') processedCanvasRef?: ElementRef<HTMLCanvasElement>;
+  @ViewChild('captionRef') captionRef?: ElementRef<HTMLElement>;
 
   readonly presetsService = inject(PresetsService);
   private readonly pdfDocument = inject(PdfDocumentService);
@@ -77,9 +78,13 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
   // feitas depois de um `await` só disparam re-render se forem signals.
   readonly currentPage = signal(1);
   readonly zoom = signal(1);
-  readonly showComparison = signal(false);
+  readonly view = signal<'original' | 'result'>('original');
+  // true só enquanto o PDF processado corresponde às margens da tela — qualquer
+  // mudança de margem invalida o resultado (e "Baixar PDF" some até reprocessar).
+  readonly resultFresh = signal(false);
   readonly margins = signal<Margins>({ top: 0, bottom: 0, left: 0, right: 25 });
   readonly processedPdfDoc = signal<PdfDocument | null>(null);
+  readonly favoritesOpen = signal(false);
 
   readonly removeAnnotations = true;
   newPresetName = '';
@@ -113,19 +118,13 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
   async ngOnChanges(changes: SimpleChanges) {
     if (changes['processedPdf'] && !changes['processedPdf'].firstChange) {
       if (this.processedPdf) {
-        this.showComparison.set(true);
-        // A comparação mostra duas páginas lado a lado — o zoom calculado pra uma
-        // página só (ngAfterViewInit) pode não caber mais duas, especialmente em
-        // PDFs paisagem (já largos). Recalcula considerando as duas e já
-        // re-renderiza o original ANTES de carregar o processado: se fizesse na
-        // ordem inversa, "Resultado Final" apareceria (processedPdfDoc setado)
-        // enquanto o canvas original ainda estivesse na escala antiga — os dois
-        // lados da comparação ficariam com tamanhos diferentes por um instante.
-        this.zoom.set(this.calculateFitScale());
-        await this.renderOriginal();
         await this.loadProcessedDocument(this.processedPdf);
+        this.resultFresh.set(true);
+        this.view.set('result');
       } else {
         this.processedPdfDoc.set(null);
+        this.resultFresh.set(false);
+        this.view.set('original');
       }
     }
   }
@@ -143,18 +142,13 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
     const container = this.canvasContainerRef?.nativeElement;
     if (!container) return 1;
 
-    const horizontalPadding = window.innerWidth >= 640 ? 96 : 32; // Tailwind p-12 / p-4 (dois lados)
+    const padding = window.innerWidth >= 640 ? 64 : 32; // Tailwind p-8 / p-4 (dois lados)
     const rulerSize = 24;
+    // A legenda acima da página (dica / aviso) + o gap-3 entre ela e a página.
+    const caption = (this.captionRef?.nativeElement.offsetHeight ?? 0) + 12;
 
-    let availableWidth = container.clientWidth - horizontalPadding - rulerSize;
-    const availableHeight = container.clientHeight - horizontalPadding - rulerSize;
-
-    // No modo de comparação, duas páginas aparecem lado a lado (gap-16 = 64px
-    // entre elas) — sem dividir a largura disponível por dois aqui, uma página
-    // paisagem (já larga) sozinha já ocupa quase tudo, e a segunda não cabe.
-    if (this.showComparison() && window.innerWidth >= 640) {
-      availableWidth = (availableWidth - 64) / 2;
-    }
+    const availableWidth = container.clientWidth - padding - rulerSize;
+    const availableHeight = container.clientHeight - padding - rulerSize - caption;
 
     const scaleW = availableWidth / this.pdfInfo.width;
     const scaleH = availableHeight / this.pdfInfo.height;
@@ -166,8 +160,8 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
     try {
       const doc = await this.pdfDocument.load(processedPdf);
       this.processedPdfDoc.set(doc);
-      // O <canvas> só existe no DOM depois que o Angular processar o novo valor do
-      // signal (o @if do template precisa rodar uma change detection primeiro).
+      // Renderiza depois do próximo ciclo de render, quando o canvas do resultado
+      // já está visível com o tamanho certo.
       afterNextRender(() => this.renderProcessed(doc), { injector: this.injector });
     } catch (e) {
       console.error('Erro ao carregar PDF processado:', e);
@@ -198,7 +192,7 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   private async rerenderAll() {
     await this.renderOriginal();
-    if (this.showComparison() && this.processedPdfDoc()) {
+    if (this.processedPdfDoc()) {
       await this.renderProcessed();
     }
   }
@@ -217,11 +211,9 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.setZoom(this.calculateFitScale());
   }
 
-  handleHideComparison() {
-    this.showComparison.set(false);
-    // Volta a caber uma página só (sem a segunda ao lado), então o zoom de
-    // ajuste automático precisa ser recalculado de novo.
-    this.setZoom(this.calculateFitScale());
+  setView(view: 'original' | 'result') {
+    if (view === 'result' && !this.resultFresh()) return;
+    this.view.set(view);
   }
 
   toggleFullscreen() {
@@ -238,8 +230,18 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.process.emit({ margins: this.margins(), removeAnnotations: this.removeAnnotations });
   }
 
+  setMargins(margins: Margins) {
+    this.margins.set(margins);
+    // O resultado (e o arquivo que "Baixar PDF" entregaria) foi gerado com as
+    // margens antigas — invalida e volta pro original, pra não baixar algo
+    // diferente do que está pedido na tela.
+    this.resultFresh.set(false);
+    this.view.set('original');
+  }
+
   handleSelectPreset(preset: Preset) {
-    this.margins.set({ ...preset.margins });
+    this.setMargins({ ...preset.margins });
+    this.favoritesOpen.set(false);
   }
 
   handleSavePreset() {
@@ -255,7 +257,7 @@ export class PdfEditorComponent implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   handleDownload() {
-    if (!this.processedPdf) return;
+    if (!this.processedPdf || !this.resultFresh()) return;
     downloadBlob(this.processedPdf, this.file.name.replace('.pdf', '_limpo.pdf'), 'application/pdf');
   }
 }

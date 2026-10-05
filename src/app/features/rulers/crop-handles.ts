@@ -57,22 +57,22 @@ type DragEdge = 'top' | 'bottom' | 'left' | 'right' | null;
     ></div>
 
     @if (margins.top > 20) {
-      <div class="absolute left-1/2 -translate-x-1/2 label-sm text-primary z-30" [style.top.px]="scaled().top / 2 - 8">
+      <div class="absolute left-1/2 -translate-x-1/2 label-sm text-primary z-30 pointer-events-none" [style.top.px]="scaled().top / 2 - 8">
         {{ Math.round(margins.top) }}
       </div>
     }
     @if (margins.bottom > 20) {
-      <div class="absolute left-1/2 -translate-x-1/2 label-sm text-primary z-30" [style.bottom.px]="scaled().bottom / 2 - 8">
+      <div class="absolute left-1/2 -translate-x-1/2 label-sm text-primary z-30 pointer-events-none" [style.bottom.px]="scaled().bottom / 2 - 8">
         {{ Math.round(margins.bottom) }}
       </div>
     }
     @if (margins.left > 20) {
-      <div class="absolute top-1/2 -translate-y-1/2 label-sm text-primary z-30" [style.left.px]="scaled().left / 2 - 12">
+      <div class="absolute top-1/2 -translate-y-1/2 label-sm text-primary z-30 pointer-events-none" [style.left.px]="scaled().left / 2 - 12">
         {{ Math.round(margins.left) }}
       </div>
     }
     @if (margins.right > 20) {
-      <div class="absolute top-1/2 -translate-y-1/2 label-sm text-primary z-30" [style.right.px]="scaled().right / 2 - 12">
+      <div class="absolute top-1/2 -translate-y-1/2 label-sm text-primary z-30 pointer-events-none" [style.right.px]="scaled().right / 2 - 12">
         {{ Math.round(margins.right) }}
       </div>
     }

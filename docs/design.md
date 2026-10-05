@@ -100,12 +100,18 @@ Para a UI não parecer chapada, use glassmorphism em barras de navegação e mod
 
 ## 3. Tipografia
 
-Usamos **Inter** não como uma fonte de UI padrão, mas como um tipo modernista — a hierarquia editorial vem de contrastes de escala extremos.
+Duas famílias, papéis bem separados — a dupla serifada/sans reforça a identidade "ateliê editorial" em vez de uma família de UI genérica cobrindo tudo:
 
-- **Display Large** (3.5rem, `-0.02em` de tracking): âncoras de uma palavra só, de efeito forte.
-- **Headline Medium** (1.75rem): o cavalo de batalha dos cabeçalhos de seção, sempre na cor primária.
-- **Body Large** (1rem): usa `on_surface_variant` (`--muted-foreground`) em vez de preto puro, pra manter a suavidade "orgânica" contra o fundo.
-- **Label Medium** (0.75rem): sempre maiúsculo, com `+0.05em` de tracking — sensação de "arquivo etiquetado".
+- **`--font-display` (Fraunces)**: serifada, só em títulos, headlines e no wordmark da logo. Hospedada localmente em [`src/styles/fonts/`](../src/styles/fonts/) (ver [`fonts.css`](../src/styles/fonts.css)) em vez de um `<link>` do Google Fonts — o app já se vende como "processamento 100% local, sem cookies", então buscar fonte de um domínio externo a cada carga contradiz essa proposta. É uma fonte variável; o `@font-face` cobre uma faixa de peso (`400 600`) em vez de declarar cada peso num arquivo separado.
+- **`--font-sans` (Public Sans)**: sans, usada em todo o resto — corpo de texto, labels, UI densa (sidebar, controles, badges). Serifada em tamanho pequeno perde legibilidade; por isso a UI funcional fica inteira em sans.
+
+Escala (classes em [`styles.css`](../src/styles.css)):
+
+- **`.display-sm`** (`clamp(1.9rem, 4.2vw, 3rem)`, Fraunces, `-0.01em` de tracking, `text-wrap: balance`): título do hero da landing.
+- **`.headline-md`** (1.45rem, Fraunces, `-0.01em` de tracking): cabeçalhos de seção ("Como funciona") — texto normal, não caixa alta; mais editorial que um "eyebrow label" genérico.
+- **`.title-md`** (1.25rem, Public Sans, negrito): títulos de UI densa (nomes de arquivo, cabeçalhos de sidebar).
+- **`.body-large`** / **`.body-md`** (1.125rem / 1rem, Public Sans): usa `muted-foreground` em vez de preto puro, pra manter a suavidade "orgânica" contra o fundo.
+- **`.label-sm`** (0.875rem, Public Sans, maiúsculo, `+0.08em` de tracking): sensação de "arquivo etiquetado".
 
 ---
 
@@ -121,16 +127,29 @@ Hierarquia vem de **camadas tonais**, não de sombra.
 
 ## 5. Componentes
 
-### Botões
-- **Primário**: fundo `secondary`, texto `on_secondary`, raio de 16px, sem borda.
-- **Secundário**: fundo transparente, borda "ghost" (`outline_variant` a 20%), texto `primary`.
-- **Terciário**: texto `tertiary`, sublinhado de 2px com 4px de offset.
+Botões, campos e tooltips vêm do **[Taiga UI](https://taiga-ui.dev)** (Apache-2.0, sem chave de licença). O PrimeNG foi testado e descartado: da v18 em diante ele exige chave de licença PrimeUI (mesmo no plano gratuito) e mostra um aviso na tela sem ela.
+
+O Taiga **não tem modo "sem estilo"**: cada componente injeta o próprio CSS, que vence classes Tailwind escritas no elemento. Por isso **não se estiliza um componente do Taiga com classes Tailwind** — usa-se a API dele (`appearance`, `size`) e o tema:
+
+- **Tema**: [`src/styles/taiga-theme.css`](../src/styles/taiga-theme.css) aponta as variáveis `--tui-*` pros tokens de `colors.css`/`fonts.css` (trocar a paleta lá já muda os componentes). Carrega depois de `taiga-ui-theme.less` (ordem em `angular.json`). O `taiga-ui-fonts.less` do Taiga ficou de fora de propósito: ele baixa a fonte Manrope do Google Fonts, o que contradiz o "processamento 100% local".
+- **Ícones**: o app usa os próprios (`<app-icon>`), projetados dentro dos botões. O pacote `@taiga-ui/icons` não está instalado; por isso o botão "limpar" dos campos está desligado em `app.config.ts`.
+
+### Botões (`tuiButton` / `tuiIconButton`)
+- **Ação principal** ("Ver resultado", "Baixar PDF", "Escolher arquivo"): `appearance="primary"` — dourado (`--tui-background-accent-1` = `secondary`).
+- **Ação secundária** ("Salvar" favorito): `appearance="secondary"`.
+- **Ações discretas** (voltar, "Favoritos", zerar margens, zoom, remover arquivo): `appearance="flat"`.
+- Botões só com ícone (`tuiIconButton`) sempre levam `aria-label`.
+
+### Editor (tela depois de abrir o PDF)
+Layout "foco no documento": a página ocupa a tela; no topo ficam o arquivo, a chave **Original / Resultado** (`tui-segmented`) e o zoom; embaixo, uma **barra flutuante** (`role="toolbar"`) com as quatro margens, o menu de **Favoritos** (`tuiDropdown`, abrindo pra cima) e a ação principal. "Resultado" só fica disponível enquanto o PDF processado corresponde às margens da tela — qualquer mudança de margem volta pro original e troca "Baixar PDF" por "Ver resultado". Campo de margem com valor > 0 fica dourado (`.margin-on`, em `taiga-theme.css`), a mesma cor das bordas hachuradas na página.
+
+Números (zoom, régua, margens) usam a Public Sans com `tabular-nums` — nunca a fonte monoespaçada do sistema.
 
 ### Cards
 Zero bordas. Padding interno generoso; quando há múltiplos cards, o espaçamento entre eles (não uma borda) é o que separa visualmente, deixando o fundo atuar como separador natural.
 
-### Campos de entrada
-Preenchimento suave (`surface_variant` como fundo). No foco, transiciona para `surface_container_lowest` (branco) e ganha uma borda "ghost" de 1px na cor secundária.
+### Campos de entrada (`tui-textfield`)
+Texto livre: `<input tuiInput>`. Números (margens): `<input tuiInputNumber [min] [max] postfix=" pt">` — o próprio Taiga limita ao mínimo/máximo, sem clamping manual. Todo campo sem `<label>` visível leva `aria-label`.
 
 ### Chips e tags
 Fundo `primary_container`, texto `on_primary_container`, formato pílula completa.
@@ -148,3 +167,19 @@ Fundo `primary_container`, texto `on_primary_container`, formato pílula complet
 - Bordas sólidas de 1px — é o jeito mais rápido de fazer um sistema premium parecer um dashboard genérico.
 - Preto puro — sempre usar `--foreground` ou `--primary`.
 - Sombras padrão (o "halo cinza turvo") — se algo precisa flutuar, precisa de um tingimento quente ambiente.
+
+---
+
+## 7. Logo
+
+Conceito: **marcas de corte** (crop marks) — o símbolo de pré-impressão usado pra marcar onde uma página será cortada, aplicado diretamente à função do app (cortar margens de PDF). Não é um ícone de "arquivo" genérico; é um símbolo que já significa "corte" antes de qualquer contexto de marca.
+
+**Forma**: 4 brackets em L, um em cada canto de um quadrado, insetados da borda (não encostam nos cantos do viewBox) — igual a mirar os cantos de uma página antes de cortar. Traços com `stroke-linecap="round"` e `stroke-linejoin="round"`, sem preenchimento.
+
+**Cor**: 3 cantos em creme/branco (`currentColor`, herda branco quando usado sobre o tile `bg-primary`), 1 canto (inferior-direito) em dourado (`--secondary`) — o toque assimétrico intencional já defendido na seção 6 ("Fazer: padding assimétrico"), aplicado agora à marca em vez de só ao layout.
+
+**Implementação**: componente único, [`src/app/ui/logo/logo.ts`](../src/app/ui/logo/logo.ts) (`<app-logo [size]="18" />`), reusado em dois lugares — não duas versões divergentes do mesmo mark:
+- **Header** (`app.html`): dentro do mesmo tile `bg-primary rounded-2xl rotate-3` que a UI já usava para o ícone antigo — a leve rotação do tile lembra um carimbo de tinta, reforçando a metáfora "ateliê"/"ficha".
+- **Favicon** ([`public/favicon.svg`](../public/favicon.svg)): mesmo desenho, hardcoded em SVG estático porque o favicon não executa CSS do app (ver nota da seção 1.1 sobre sincronização manual de cor).
+
+O wordmark ao lado abandonou o tratamento antigo (tudo maiúsculo, tracking largo, sans) em favor de `font-display` (Fraunces) itálico semi-negrito, caixa normal — "PDF Cleaner" como um nome assinado, não como um rótulo de dashboard. A legenda pequena embaixo ("Edition v2.0") continua em mono/sans, estilo carimbo de ficha.

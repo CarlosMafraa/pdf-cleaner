@@ -1,38 +1,28 @@
 import { Component, inject, signal } from '@angular/core';
+import { TuiRoot } from '@taiga-ui/core';
 
-import { IconComponent, type IconName } from './ui/icon/icon';
+import { IconComponent } from './ui/icon/icon';
+import { LogoComponent } from './ui/logo/logo';
 import { FileUploaderComponent } from './features/file-uploader/file-uploader';
 import { FileListComponent } from './features/file-uploader/file-list';
 import { PdfEditorComponent, type PdfInfo } from './features/pdf-editor/pdf-editor';
 import { PdfDocumentService } from './core/pdf-document.service';
 import { PdfProcessingService, type ProcessOptions } from './core/pdf-processing.service';
 
-interface Feature {
-  icon: IconName;
-  title: string;
-  desc: string;
-}
-
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [IconComponent, FileUploaderComponent, FileListComponent, PdfEditorComponent],
+  imports: [TuiRoot, IconComponent, LogoComponent, FileUploaderComponent, FileListComponent, PdfEditorComponent],
   templateUrl: './app.html',
 })
 export class App {
   private readonly pdfDocument = inject(PdfDocumentService);
   private readonly pdfProcessing = inject(PdfProcessingService);
 
-  readonly features: Feature[] = [
-    { icon: 'file-text', title: 'Limpeza de Camadas', desc: 'Identifica e neutraliza assinaturas digitais e anotações nativas.' },
-    { icon: 'ruler', title: 'Corte de Precisão', desc: 'Réguas milimétricas para definir o perímetro exato de exibição.' },
-    { icon: 'shield', title: 'Segurança Absoluta', desc: 'Processamento síncrono no navegador. Seus dados nunca saem da máquina.' },
-  ];
-
-  readonly values = [
-    { title: 'Soberania de Dados', desc: 'Todo o processamento ocorre no seu hardware local.' },
-    { title: 'Acesso Livre', desc: 'Sem assinaturas, sem logins, sem interrupções.' },
-    { title: 'Interface Editorial', desc: 'Design focado em legibilidade e redução de fadiga visual.' },
+  readonly steps = [
+    { title: 'Envie o PDF', desc: 'Ele abre aqui mesmo, no navegador. Nada é enviado para servidor.' },
+    { title: 'Marque as bordas', desc: 'Arraste as réguas sobre a página ou digite a margem de cada lado, em pontos (pt).' },
+    { title: 'Compare e baixe', desc: 'Veja o antes e o depois lado a lado e baixe o PDF limpo.' },
   ];
 
   // Estado reativo via signals: esta app é "zoneless" (Angular 22 sem zone.js),

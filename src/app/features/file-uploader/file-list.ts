@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { TuiButton } from '@taiga-ui/core';
 import { IconComponent } from '../../ui/icon/icon';
-import { ButtonDirective } from '../../ui/button/button';
 
 @Component({
   selector: 'app-file-list',
   standalone: true,
-  imports: [IconComponent, ButtonDirective],
+  imports: [IconComponent, TuiButton],
   template: `
     @if (files.length > 0) {
       <div class="space-y-8 animate-in fade-in duration-500">
@@ -27,21 +27,22 @@ import { ButtonDirective } from '../../ui/button/button';
                     {{ file.name }}
                   </p>
                   <div class="flex items-center gap-3 mt-1">
-                    <p class="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">
+                    <p class="text-xs text-muted-foreground tabular-nums">
                       {{ (file.size / 1024 / 1024).toFixed(2) }} MB
                     </p>
                     <div class="w-1 h-1 rounded-full bg-primary/10"></div>
-                    <p class="text-[10px] font-mono text-muted-foreground uppercase tracking-widest italic">Aguardando</p>
+                    <p class="text-xs text-muted-foreground">Aguardando</p>
                   </div>
                 </div>
               </div>
 
               <button
-                appButton
-                variant="ghost"
-                size="icon"
+                tuiIconButton
+                type="button"
+                appearance="flat"
+                size="s"
+                [attr.aria-label]="'Remover ' + file.name"
                 (click)="remove.emit($index)"
-                class="h-10 w-10 text-primary/60 hover:text-destructive hover:bg-destructive/5 rounded-xl transition-all"
               >
                 <app-icon name="x" [size]="18" />
               </button>
